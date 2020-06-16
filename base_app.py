@@ -30,11 +30,14 @@ import pandas as pd
 import numpy as np
 import re
 import nltk
-
+#nltk.download('stopwords')
+from nltk.corpus import stopwords
 import matplotlib.pyplot as plt
 import seaborn as sns
 from wordcloud import WordCloud
 #pip install wordCloud
+ #import nltk
+ #nltk.download()
 # Vectorizer
 news_vectorizer = open("resources/tfidfvect.pkl","rb")
 tweet_cv = joblib.load(news_vectorizer) # loading your vectorizer from the pkl file
@@ -45,6 +48,8 @@ raw = pd.read_csv("resources/train.csv")
 # The main function where we will build the actual app
 def main():
 	"""Tweet Classifier App with Streamlit """
+	st.sidebar.title("Multiclass Classification Web App")
+	#Removing Twitter Handles
 	def remove_twitter_handles(tweet, pattern):
 		r = re.findall(pattern, tweet)
 		for text in r:
@@ -53,7 +58,10 @@ def main():
 
 	raw['clean_tweet'] = np.vectorize(remove_twitter_handles)(raw['message'], "@[\w]*") 
 
-
+	#Removing Stopwords
+	stop_words = nltk.corpus.stopwords.words('english')
+	raw['tidy_tweet'] = raw['clean_tweet'].apply(lambda x: ' '.join([w for w in x.split() if w not in stop_words]))
+ 
 	st.title("Insights on people's peception on Climate Change ")
 
 	st.subheader("Sentiment Data")
