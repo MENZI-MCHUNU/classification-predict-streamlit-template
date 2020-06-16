@@ -61,7 +61,13 @@ def main():
 	#Removing Stopwords
 	stop_words = nltk.corpus.stopwords.words('english')
 	raw['tidy_tweet'] = raw['clean_tweet'].apply(lambda x: ' '.join([w for w in x.split() if w not in stop_words]))
- 
+	#Text Normalization
+	def tokenizing(text):
+    	text = re.split('\W+', text)
+    	return text
+
+	raw['tokenized_tweet'] = raw['tidy_tweet'].apply(lambda x: tokenizing(x))
+
 	st.title("Insights on people's peception on Climate Change ")
 
 	st.subheader("Sentiment Data")
