@@ -77,6 +77,16 @@ def main():
 	plt.show()
 	st.pyplot()
 
+	st.subheader("Understanding Common Words in the Negative Tweets")
+	df_anti = raw[raw.sentiment==-1]
+	text= (' '.join(df_anti['clean_tweet']))
+	wordcloud = WordCloud(width = 1000, height = 500).generate(text)
+	plt.figure(figsize=(15,10))
+	plt.imshow(wordcloud)
+	plt.axis('off')
+	plt.show()
+	st.pyplot()
+
 	st.subheader("Understanding Common Words in Neutral Tweets")
 	df_neutral = raw[raw.sentiment==0]
 	text= (' '.join(df_neutral['clean_tweet']))
@@ -97,6 +107,7 @@ def main():
 	plt.show()
 	st.pyplot()
 
+
 	st.subheader("Understanding Relationship of Hashtags and Sentiment of Tweet")
 	pro_hashtags = []
 	for message in df_pro['message']:
@@ -112,10 +123,77 @@ def main():
 	d = d.nlargest(columns="Count", n = 10) 
 	plt.figure(figsize=(10,5))
 	ax = sns.barplot(data=d, x= "Hashtag", y = "Count")
-	plt.setp(ax.get_xticklabels(),rotation='vertical', fontsize=10)
+	plt.setp(ax.get_xticklabels(),rotation=17, fontsize=10)
 	plt.title('Top 10 Hashtags in "Pro" Tweets', fontsize=14)
 	plt.show()
 	st.pyplot()
+	print('\n')
+	print('\n')
+	#st.subheader("Understanding Relationship of Hashtags and Sentiment of Tweet")
+	anti_hashtags = []
+	for message in df_anti['message']:
+		hashtag = re.findall(r"#(\w+)", message)
+		anti_hashtags.append(hashtag)
+
+	anti_hashtags = sum(anti_hashtags,[])
+
+
+	a = nltk.FreqDist(anti_hashtags)
+	d = pd.DataFrame({'Hashtag': list(a.keys()),
+                  'Count': list(a.values())})
+
+	# selecting top 20 most frequent hashtags     
+	d = d.nlargest(columns="Count", n = 10) 
+	plt.figure(figsize=(10,5))
+	ax = sns.barplot(data=d, x= "Hashtag", y = "Count")
+	plt.setp(ax.get_xticklabels(),rotation=17, fontsize=10)
+	plt.title('Top 10 Hashtags in "Anti" Tweets', fontsize=14)
+	plt.show()
+	st.pyplot()
+	print('\n')
+
+	neutral_hashtags = []
+	for message in df_neutral['message']:
+		hashtag = re.findall(r"#(\w+)", message)
+		neutral_hashtags.append(hashtag)
+
+	neutral_hashtags = sum(neutral_hashtags,[])
+
+
+	a = nltk.FreqDist(neutral_hashtags)
+	d = pd.DataFrame({'Hashtag': list(a.keys()),
+                  'Count': list(a.values())})
+
+	# selecting top 20 most frequent hashtags     
+	d = d.nlargest(columns="Count", n = 10) 
+	plt.figure(figsize=(10,5))
+	ax = sns.barplot(data=d, x= "Hashtag", y = "Count")
+	plt.setp(ax.get_xticklabels(),rotation=17, fontsize=10)
+	plt.title('Top 10 Hashtags in Neutral Tweets', fontsize=14)
+	plt.show()
+	st.pyplot()
+
+	print("\n")
+	factual_hashtags = []
+	for message in df_factual['message']:
+		hashtag = re.findall(r"#(\w+)", message)
+		factual_hashtags.append(hashtag)
+
+	factual_hashtags = sum(factual_hashtags,[])
+
+
+	a = nltk.FreqDist(factual_hashtags)
+	d = pd.DataFrame({'Hashtag': list(a.keys()),
+                  'Count': list(a.values())})
+
+	# selecting top 20 most frequent hashtags     
+	d = d.nlargest(columns="Count", n = 10) 
+	plt.figure(figsize=(10,5))
+	ax = sns.barplot(data=d, x= "Hashtag", y = "Count")
+	plt.setp(ax.get_xticklabels(),rotation=17, fontsize=10)
+	plt.title('Top 10 Hashtags in Factual Tweets', fontsize=14)
+	plt.show()
+	st.pyplot()	
 	# Creates a main title and subheader on your page -
 	# these are static across all pages
 	#st.title("Tweet Classifer")
