@@ -29,6 +29,7 @@ import joblib,os
 import pandas as pd
 import numpy as np
 import re
+import nltk
 
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -76,6 +77,45 @@ def main():
 	plt.show()
 	st.pyplot()
 
+	st.subheader("Understanding Common Words in Neutral Tweets")
+	df_neutral = raw[raw.sentiment==0]
+	text= (' '.join(df_neutral['clean_tweet']))
+	wordcloud = WordCloud(width = 1000, height = 500).generate(text)
+	plt.figure(figsize=(15,10))
+	plt.imshow(wordcloud)
+	plt.axis('off')
+	plt.show()
+	st.pyplot()
+
+	st.subheader("Understanding Common Words in Factual Tweets")
+	df_factual = raw[raw.sentiment==2]
+	text= (' '.join(df_factual['clean_tweet']))
+	wordcloud = WordCloud(width = 1000, height = 500).generate(text)
+	plt.figure(figsize=(15,10))
+	plt.imshow(wordcloud)
+	plt.axis('off')
+	plt.show()
+	st.pyplot()
+
+	st.subheader("Understanding Relationship of Hashtags and Sentiment of Tweet")
+	pro_hashtags = []
+	for message in df_pro['message']:
+		hashtag = re.findall(r"#(\w+)", message)
+		pro_hashtags.append(hashtag)
+
+	pro_hashtags = sum(pro_hashtags,[])
+	a = nltk.FreqDist(pro_hashtags)
+	d = pd.DataFrame({'Hashtag': list(a.keys()),
+                  'Count': list(a.values())})
+
+	# selecting top 10 most frequent hashtags     
+	d = d.nlargest(columns="Count", n = 10) 
+	plt.figure(figsize=(10,5))
+	ax = sns.barplot(data=d, x= "Hashtag", y = "Count")
+	plt.setp(ax.get_xticklabels(),rotation='vertical', fontsize=10)
+	plt.title('Top 10 Hashtags in "Pro" Tweets', fontsize=14)
+	plt.show()
+	st.pyplot()
 	# Creates a main title and subheader on your page -
 	# these are static across all pages
 	#st.title("Tweet Classifer")
