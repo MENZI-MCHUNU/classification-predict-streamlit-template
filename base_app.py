@@ -28,6 +28,9 @@ import joblib,os
 # Data dependencies
 import pandas as pd
 
+import matplotlib.pyplot as plt
+import seaborn as sns
+
 # Vectorizer
 news_vectorizer = open("resources/tfidfvect.pkl","rb")
 tweet_cv = joblib.load(news_vectorizer) # loading your vectorizer from the pkl file
@@ -39,9 +42,22 @@ raw = pd.read_csv("resources/train.csv")
 def main():
 	"""Tweet Classifier App with Streamlit """
 
+	st.title("Insights on people's peception on Climate Change ")
+
+	st.subheader("Sentiment Data")
+
+	plt.figure(figsize=(12,6))
+	sns.countplot(x='sentiment',data=raw, palette='CMRmap')
+	plt.title('Number of Tweets per Class', fontsize=20)
+	plt.xlabel('Number of Tweets', fontsize=14)
+	plt.ylabel('Class', fontsize=14)
+	plt.show()
+	st.pyplot()
+
+	
 	# Creates a main title and subheader on your page -
 	# these are static across all pages
-	st.title("Tweet Classifer")
+	#st.title("Tweet Classifer")
 	st.subheader("Climate change tweet classification")
 
 	# Creating sidebar with selection box -
