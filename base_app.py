@@ -27,10 +27,13 @@ import joblib,os
 
 # Data dependencies
 import pandas as pd
+import numpy as np
+import re
 
 import matplotlib.pyplot as plt
 import seaborn as sns
-
+from wordcloud import WordCloud
+#pip install wordCloud
 # Vectorizer
 news_vectorizer = open("resources/tfidfvect.pkl","rb")
 tweet_cv = joblib.load(news_vectorizer) # loading your vectorizer from the pkl file
@@ -41,6 +44,14 @@ raw = pd.read_csv("resources/train.csv")
 # The main function where we will build the actual app
 def main():
 	"""Tweet Classifier App with Streamlit """
+	def remove_twitter_handles(tweet, pattern):
+		r = re.findall(pattern, tweet)
+		for text in r:
+			tweet = re.sub(text, '', tweet)
+		return tweet
+
+	raw['clean_tweet'] = np.vectorize(remove_twitter_handles)(raw['message'], "@[\w]*") 
+
 
 	st.title("Insights on people's peception on Climate Change ")
 
@@ -54,7 +65,17 @@ def main():
 	plt.show()
 	st.pyplot()
 
-	
+	st.subheader("Understanding Common Words in the Positive Tweets")
+	df_pro = raw[raw.sentiment==1]
+	words = ' '.join([text for text in raw['clean_tweet']])
+	#text= (' '.join(df_positive['stemmed_tweet']))
+	wordcloud = WordCloud(width = 1000, height = 500).generate(words)
+	plt.figure(figsize=(15,10))
+	plt.imshow(wordcloud)
+	plt.axis('off')
+	plt.show()
+	st.pyplot()
+
 	# Creates a main title and subheader on your page -
 	# these are static across all pages
 	#st.title("Tweet Classifer")
