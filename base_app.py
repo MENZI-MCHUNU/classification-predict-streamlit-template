@@ -31,13 +31,24 @@ import numpy as np
 import re
 import nltk
 #nltk.download('stopwords')
+from nltk.corpus import wordnet as wn
 from nltk.corpus import stopwords
 import matplotlib.pyplot as plt
 import seaborn as sns
 from wordcloud import WordCloud
+from nltk.stem import WordNetLemmatizer
+from sklearn.model_selection import train_test_split
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
+from sklearn.metrics import confusion_matrix, classification_report,accuracy_score
+from sklearn.svm import SVC
+from sklearn.pipeline import Pipeline
+from sklearn.metrics import precision_score, recall_score 
+from sklearn.linear_model import LogisticRegression
 #pip install wordCloud
  #import nltk
- #nltk.download()
+ #nltk.download('stopwords')
+ #nltk.download('wordnet')
 # Vectorizer
 news_vectorizer = open("resources/tfidfvect.pkl","rb")
 tweet_cv = joblib.load(news_vectorizer) # loading your vectorizer from the pkl file
@@ -49,7 +60,9 @@ raw = pd.read_csv("resources/train.csv")
 def main():
 	"""Tweet Classifier App with Streamlit """
 	st.sidebar.title("Multiclass Classification Web App")
+	st.sidebar.markdown("Is the tweet News , Pro , Neutral or Anti climate-change ? ")
 	#Removing Twitter Handles
+	#@st.cache(persist=True)
 	def remove_twitter_handles(tweet, pattern):
 		r = re.findall(pattern, tweet)
 		for text in r:
@@ -62,11 +75,103 @@ def main():
 	stop_words = nltk.corpus.stopwords.words('english')
 	raw['tidy_tweet'] = raw['clean_tweet'].apply(lambda x: ' '.join([w for w in x.split() if w not in stop_words]))
 	#Text Normalization
+	#@st.cache(persist=True)
 	def tokenizing(text):
-    	text = re.split('\W+', text)
-    	return text
+		text = re.split('\W+', text)
+		return text
 
 	raw['tokenized_tweet'] = raw['tidy_tweet'].apply(lambda x: tokenizing(x))
+
+	tokens = raw['tokenized_tweet']
+
+	lemmatizer = WordNetLemmatizer()
+
+	tokens = tokens.apply(lambda x: [lemmatizer.lemmatize(i) for i in x])
+
+	raw['lemmatized_tweet'] = tokens
+	
+    # Split the data
+	X = raw['lemmatized_tweet']
+	y = raw['sentiment']
+	X_train, X_test, y_train, y_test = train_test_split(X,y,test_size=0.2, random_state=42)
+
+	X_train = X_train.str.join(', ')
+	X_test = X_test.str.join(', ')
+	vectorizer = TfidfVectorizer()
+	X_train_tfidf = vectorizer.fit_transform(X_train)
+
+	def plot_metrics(metrics_list):
+		if 'Confusion Matrix' in metrics_list:
+			st.subheader("Confusion Matrix")
+			plot_confusion_matrix(model, X_test, y_test, display_labels=class_names)
+			st.pyplot()
+
+		if 'ROC Curve' in metrics_list:
+			st.subheader("ROC Curve")
+			plot_roc_curve(model, X_test, y_test)
+			st.pyplot() 
+
+		if 'Precision-Recall Curve' in metrics_list:
+			st.subheader("Precision-Recall Curve")
+			plot_precision_recall_curve(model, X_test, y_test)
+			st.pyplot()
+
+	class_names = ['News','Pro','Neutral','Anti']
+	st.sidebar.subheader("Choose Classifier")
+	Classifier = st.sidebar.selectbox("Classifier", ("Support Vector Machine (SVM)", "Logistic Regression","Random Forest"))
+    
+	if Classifier == 'Support Vector Machine (SVM)':
+		st.sidebar.subheader("Model Hyperparameters")
+		C = st.sidebar.number_input("C (Regularization parameter)",0.01,10.0, step=0.01, key='C')
+		kernel = st.sidebar.radio("Kernel",("rbf","linear"),key='kernel')
+		gamma = st.sidebar.radio("Gamma (Kernel Coefficient)", ("scale","auto"),key ='gamma')
+        
+		metrics = st.sidebar.multiselect("What metrics to plot?",('Confusion Matrix','ROC Curve','Precision-Recall Curve'))
+
+		if st.sidebar.button("Classify", key="classify"):
+			st.subheader("Support Vector Machine (SVM) Results")
+			model = SVC(C=C, kernel=kernel, gamma=gamma)
+			#model.fit(x_train, y_train)
+			model.fit(X_train_tfidf,y_train)
+
+			text_classifier = Pipeline([
+    			('bow',CountVectorizer()),  # strings to token integer counts
+    			('tfidf', TfidfTransformer()),  # integer counts to weighted TF-IDF scores
+    			('classifier',SVC(C=C, kernel=kernel, gamma=gamma)),  # train on TF-IDF vectors w/ Linear Support Vector Classifier
+			])
+			text_classifier.fit(X_train, y_train)
+			accuracy = text_classifier.score(X_test, y_test)
+			y_pred  = text_classifier.predict(X_test)
+			st.write("Accuracy: ", accuracy.round(2))
+			#st.write("Precision: ", precision_score(y_test, y_pred, labels=class_names).round(2))
+			#st.write("Recall: ", recall_score(y_test, y_pred, labels=class_names).round(2))
+			plot_metrics(metrics)	
+
+	if Classifier == 'Logistic Regression':
+		st.sidebar.subheader("Model Hyperparameters")
+		C = st.sidebar.number_input("C (Regularization parameter)",0.01,10.0, step=0.01, key='C_LR')
+		max_iter = st.sidebar.slider("Maximum number of iterations", 100, 500, key='max_iter')
+
+        
+		metrics = st.sidebar.multiselect("What metrics to plot?",('Confusion Matrix','ROC Curve','Precision-Recall Curve'))
+
+		if st.sidebar.button("Classify", key="classify"):
+			st.subheader("Logistic Regression Results")
+			model = LogisticRegression(C=C, max_iter=max_iter)
+			model.fit(X_train_tfidf, y_train)
+
+			text_classifier = Pipeline([
+    			('bow',CountVectorizer()),  # strings to token integer counts
+    			('tfidf', TfidfTransformer()),  # integer counts to weighted TF-IDF scores
+    			('classifier',LogisticRegression(C=C, max_iter=max_iter)),  # train on TF-IDF vectors w/ Linear Support Vector Classifier
+				])
+			text_classifier.fit(X_train, y_train)
+			accuracy = text_classifier.score(X_test, y_test)
+			y_pred  = text_classifier.predict(X_test)
+			st.write("Accuracy: ", accuracy.round(2))
+            	#st.write("Precision: ", precision_score(y_test, y_pred, labels=class_names).round(2))
+            	#st.write("Recall: ", recall_score(y_test, y_pred, labels=class_names).round(2))
+			plot_metrics(metrics)
 
 	st.title("Insights on people's peception on Climate Change ")
 
