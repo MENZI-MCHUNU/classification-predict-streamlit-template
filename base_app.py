@@ -45,6 +45,7 @@ from sklearn.svm import SVC
 from sklearn.pipeline import Pipeline
 from sklearn.metrics import precision_score, recall_score 
 from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import plot_confusion_matrix, plot_roc_curve, plot_precision_recall_curve
 #pip install wordCloud
  #import nltk
  #nltk.download('stopwords')
@@ -149,7 +150,7 @@ def main():
 
 	if Classifier == 'Logistic Regression':
 		st.sidebar.subheader("Model Hyperparameters")
-		C = st.sidebar.number_input("C (Regularization parameter)",0.01,10.0, step=0.01, key='C_LR')
+		C = st.sidebar.number_input("C (Regularization parameter)",0.01,100.0, step=0.01, key='C_LR')
 		max_iter = st.sidebar.slider("Maximum number of iterations", 100, 500, key='max_iter')
 
         
@@ -167,152 +168,13 @@ def main():
 				])
 			text_classifier.fit(X_train, y_train)
 			accuracy = text_classifier.score(X_test, y_test)
-			y_pred  = text_classifier.predict(X_test)
+			y_pred  = model.predict(X_test)
 			st.write("Accuracy: ", accuracy.round(2))
             	#st.write("Precision: ", precision_score(y_test, y_pred, labels=class_names).round(2))
             	#st.write("Recall: ", recall_score(y_test, y_pred, labels=class_names).round(2))
 			plot_metrics(metrics)
 
-	st.title("Insights on people's peception on Climate Change ")
 
-	st.subheader("Sentiment Data")
-
-	plt.figure(figsize=(12,6))
-	sns.countplot(x='sentiment',data=raw, palette='CMRmap')
-	plt.title('Number of Tweets per Class', fontsize=20)
-	plt.xlabel('Number of Tweets', fontsize=14)
-	plt.ylabel('Class', fontsize=14)
-	plt.show()
-	st.pyplot()
-
-	st.subheader("Understanding Common Words in the Positive Tweets")
-	df_pro = raw[raw.sentiment==1]
-	words = ' '.join([text for text in raw['clean_tweet']])
-	#text= (' '.join(df_positive['stemmed_tweet']))
-	wordcloud = WordCloud(width = 1000, height = 500).generate(words)
-	plt.figure(figsize=(15,10))
-	plt.imshow(wordcloud)
-	plt.axis('off')
-	plt.show()
-	st.pyplot()
-
-	st.subheader("Understanding Common Words in the Negative Tweets")
-	df_anti = raw[raw.sentiment==-1]
-	text= (' '.join(df_anti['clean_tweet']))
-	wordcloud = WordCloud(width = 1000, height = 500).generate(text)
-	plt.figure(figsize=(15,10))
-	plt.imshow(wordcloud)
-	plt.axis('off')
-	plt.show()
-	st.pyplot()
-
-	st.subheader("Understanding Common Words in Neutral Tweets")
-	df_neutral = raw[raw.sentiment==0]
-	text= (' '.join(df_neutral['clean_tweet']))
-	wordcloud = WordCloud(width = 1000, height = 500).generate(text)
-	plt.figure(figsize=(15,10))
-	plt.imshow(wordcloud)
-	plt.axis('off')
-	plt.show()
-	st.pyplot()
-
-	st.subheader("Understanding Common Words in Factual Tweets")
-	df_factual = raw[raw.sentiment==2]
-	text= (' '.join(df_factual['clean_tweet']))
-	wordcloud = WordCloud(width = 1000, height = 500).generate(text)
-	plt.figure(figsize=(15,10))
-	plt.imshow(wordcloud)
-	plt.axis('off')
-	plt.show()
-	st.pyplot()
-
-
-	st.subheader("Understanding Relationship of Hashtags and Sentiment of Tweet")
-	pro_hashtags = []
-	for message in df_pro['message']:
-		hashtag = re.findall(r"#(\w+)", message)
-		pro_hashtags.append(hashtag)
-
-	pro_hashtags = sum(pro_hashtags,[])
-	a = nltk.FreqDist(pro_hashtags)
-	d = pd.DataFrame({'Hashtag': list(a.keys()),
-                  'Count': list(a.values())})
-
-	# selecting top 10 most frequent hashtags     
-	d = d.nlargest(columns="Count", n = 10) 
-	plt.figure(figsize=(10,5))
-	ax = sns.barplot(data=d, x= "Hashtag", y = "Count")
-	plt.setp(ax.get_xticklabels(),rotation=17, fontsize=10)
-	plt.title('Top 10 Hashtags in "Pro" Tweets', fontsize=14)
-	plt.show()
-	st.pyplot()
-	print('\n')
-	print('\n')
-	#st.subheader("Understanding Relationship of Hashtags and Sentiment of Tweet")
-	anti_hashtags = []
-	for message in df_anti['message']:
-		hashtag = re.findall(r"#(\w+)", message)
-		anti_hashtags.append(hashtag)
-
-	anti_hashtags = sum(anti_hashtags,[])
-
-
-	a = nltk.FreqDist(anti_hashtags)
-	d = pd.DataFrame({'Hashtag': list(a.keys()),
-                  'Count': list(a.values())})
-
-	# selecting top 20 most frequent hashtags     
-	d = d.nlargest(columns="Count", n = 10) 
-	plt.figure(figsize=(10,5))
-	ax = sns.barplot(data=d, x= "Hashtag", y = "Count")
-	plt.setp(ax.get_xticklabels(),rotation=17, fontsize=10)
-	plt.title('Top 10 Hashtags in "Anti" Tweets', fontsize=14)
-	plt.show()
-	st.pyplot()
-	print('\n')
-
-	neutral_hashtags = []
-	for message in df_neutral['message']:
-		hashtag = re.findall(r"#(\w+)", message)
-		neutral_hashtags.append(hashtag)
-
-	neutral_hashtags = sum(neutral_hashtags,[])
-
-
-	a = nltk.FreqDist(neutral_hashtags)
-	d = pd.DataFrame({'Hashtag': list(a.keys()),
-                  'Count': list(a.values())})
-
-	# selecting top 20 most frequent hashtags     
-	d = d.nlargest(columns="Count", n = 10) 
-	plt.figure(figsize=(10,5))
-	ax = sns.barplot(data=d, x= "Hashtag", y = "Count")
-	plt.setp(ax.get_xticklabels(),rotation=17, fontsize=10)
-	plt.title('Top 10 Hashtags in Neutral Tweets', fontsize=14)
-	plt.show()
-	st.pyplot()
-
-	print("\n")
-	factual_hashtags = []
-	for message in df_factual['message']:
-		hashtag = re.findall(r"#(\w+)", message)
-		factual_hashtags.append(hashtag)
-
-	factual_hashtags = sum(factual_hashtags,[])
-
-
-	a = nltk.FreqDist(factual_hashtags)
-	d = pd.DataFrame({'Hashtag': list(a.keys()),
-                  'Count': list(a.values())})
-
-	# selecting top 20 most frequent hashtags     
-	d = d.nlargest(columns="Count", n = 10) 
-	plt.figure(figsize=(10,5))
-	ax = sns.barplot(data=d, x= "Hashtag", y = "Count")
-	plt.setp(ax.get_xticklabels(),rotation=17, fontsize=10)
-	plt.title('Top 10 Hashtags in Factual Tweets', fontsize=14)
-	plt.show()
-	st.pyplot()	
 	# Creates a main title and subheader on your page -
 	# these are static across all pages
 	#st.title("Tweet Classifer")
@@ -320,7 +182,7 @@ def main():
 
 	# Creating sidebar with selection box -
 	# you can create multiple pages this way
-	options = ["Prediction", "Information"]
+	options = ["Prediction", "Information","EDA"]
 	selection = st.sidebar.selectbox("Choose Option", options)
 
 	# Building out the "Information" page
@@ -351,7 +213,149 @@ def main():
 			# You can use a dictionary or similar structure to make this output
 			# more human interpretable.
 			st.success("Text Categorized as: {}".format(prediction))
+	# Building out the EDA page	
+	if selection == "EDA":
+		#st.title("Insights on people's peception on Climate Change ")
 
+		st.subheader("Sentiment Data")
+
+		plt.figure(figsize=(12,6))
+		sns.countplot(x='sentiment',data=raw, palette='CMRmap')
+		plt.title('Number of Tweets per Class', fontsize=20)
+		plt.xlabel('Number of Tweets', fontsize=14)
+		plt.ylabel('Class', fontsize=14)
+		plt.show()
+		st.pyplot()
+
+		st.subheader("Understanding Common Words in the Positive Tweets")
+		df_pro = raw[raw.sentiment==1]
+		words = ' '.join([text for text in raw['clean_tweet']])
+		#text= (' '.join(df_positive['stemmed_tweet']))
+		wordcloud = WordCloud(width = 1000, height = 500).generate(words)
+		plt.figure(figsize=(15,10))
+		plt.imshow(wordcloud)
+		plt.axis('off')
+		plt.show()
+		st.pyplot()
+
+		st.subheader("Understanding Common Words in the Negative Tweets")
+		df_anti = raw[raw.sentiment==-1]
+		text= (' '.join(df_anti['clean_tweet']))
+		wordcloud = WordCloud(width = 1000, height = 500).generate(text)
+		plt.figure(figsize=(15,10))
+		plt.imshow(wordcloud)
+		plt.axis('off')
+		plt.show()
+		st.pyplot()
+
+		st.subheader("Understanding Common Words in Neutral Tweets")
+		df_neutral = raw[raw.sentiment==0]
+		text= (' '.join(df_neutral['clean_tweet']))
+		wordcloud = WordCloud(width = 1000, height = 500).generate(text)
+		plt.figure(figsize=(15,10))
+		plt.imshow(wordcloud)
+		plt.axis('off')
+		plt.show()
+		st.pyplot()
+
+		st.subheader("Understanding Common Words in Factual Tweets")
+		df_factual = raw[raw.sentiment==2]
+		text= (' '.join(df_factual['clean_tweet']))
+		wordcloud = WordCloud(width = 1000, height = 500).generate(text)
+		plt.figure(figsize=(15,10))
+		plt.imshow(wordcloud)
+		plt.axis('off')
+		plt.show()
+		st.pyplot()
+
+
+		st.subheader("Understanding Relationship of Hashtags and Sentiment of Tweet")
+		pro_hashtags = []
+		for message in df_pro['message']:
+			hashtag = re.findall(r"#(\w+)", message)
+			pro_hashtags.append(hashtag)
+
+		pro_hashtags = sum(pro_hashtags,[])
+		a = nltk.FreqDist(pro_hashtags)
+		d = pd.DataFrame({'Hashtag': list(a.keys()),
+                  'Count': list(a.values())})
+
+		# selecting top 10 most frequent hashtags     
+		d = d.nlargest(columns="Count", n = 10) 
+		plt.figure(figsize=(10,5))
+		ax = sns.barplot(data=d, x= "Hashtag", y = "Count")
+		plt.setp(ax.get_xticklabels(),rotation=17, fontsize=10)
+		plt.title('Top 10 Hashtags in "Pro" Tweets', fontsize=14)
+		plt.show()
+		st.pyplot()
+		print('\n')
+		print('\n')
+		#st.subheader("Understanding Relationship of Hashtags and Sentiment of Tweet")
+		anti_hashtags = []
+		for message in df_anti['message']:
+			hashtag = re.findall(r"#(\w+)", message)
+			anti_hashtags.append(hashtag)
+
+		anti_hashtags = sum(anti_hashtags,[])
+
+
+		a = nltk.FreqDist(anti_hashtags)
+		d = pd.DataFrame({'Hashtag': list(a.keys()),
+                  'Count': list(a.values())})
+
+		# selecting top 20 most frequent hashtags     
+		d = d.nlargest(columns="Count", n = 10) 
+		plt.figure(figsize=(10,5))
+		ax = sns.barplot(data=d, x= "Hashtag", y = "Count")
+		plt.setp(ax.get_xticklabels(),rotation=17, fontsize=10)
+		plt.title('Top 10 Hashtags in "Anti" Tweets', fontsize=14)
+		plt.show()
+		st.pyplot()
+		print('\n')
+
+		neutral_hashtags = []
+		for message in df_neutral['message']:
+			hashtag = re.findall(r"#(\w+)", message)
+			neutral_hashtags.append(hashtag)
+
+		neutral_hashtags = sum(neutral_hashtags,[])
+
+
+		a = nltk.FreqDist(neutral_hashtags)
+		d = pd.DataFrame({'Hashtag': list(a.keys()),
+                  'Count': list(a.values())})
+
+		# selecting top 20 most frequent hashtags     
+		d = d.nlargest(columns="Count", n = 10) 
+		plt.figure(figsize=(10,5))
+		ax = sns.barplot(data=d, x= "Hashtag", y = "Count")
+		plt.setp(ax.get_xticklabels(),rotation=17, fontsize=10)
+		plt.title('Top 10 Hashtags in Neutral Tweets', fontsize=14)
+		plt.show()
+		st.pyplot()
+
+		print("\n")
+		factual_hashtags = []
+		for message in df_factual['message']:
+			hashtag = re.findall(r"#(\w+)", message)
+			factual_hashtags.append(hashtag)
+
+		factual_hashtags = sum(factual_hashtags,[])
+
+
+		a = nltk.FreqDist(factual_hashtags)
+		d = pd.DataFrame({'Hashtag': list(a.keys()),
+                  'Count': list(a.values())})
+
+		# selecting top 20 most frequent hashtags     
+		d = d.nlargest(columns="Count", n = 10) 
+		plt.figure(figsize=(10,5))
+		ax = sns.barplot(data=d, x= "Hashtag", y = "Count")
+		plt.setp(ax.get_xticklabels(),rotation=17, fontsize=10)
+		plt.title('Top 10 Hashtags in Factual Tweets', fontsize=14)
+		plt.show()
+		st.pyplot()	
+		
 # Required to let Streamlit instantiate our web app.  
 if __name__ == '__main__':
 	main()
