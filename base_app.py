@@ -221,7 +221,7 @@ def main():
 
 	class_names = [-1, 0, 1, 2]
 	st.sidebar.subheader("Choose Classifier")
-	Classifier = st.sidebar.selectbox("Classifier", ("Logistic Regression","Linear Support Vector","K-nearest neighbours"))
+	Classifier = st.sidebar.selectbox("Classifier", ("Logistic Regression","Linear Support Vector","Random Forest"))
     
 	# if Classifier == 'Support Vector Machine (SVM)':
 	# 	st.sidebar.subheader("Model Hyperparameters")
@@ -289,30 +289,30 @@ def main():
 			# plt.xlabel("Value of C for LogisticRegression")
 			# plt.ylabel("Testing Accuracy")
 			# st.pyplot()
-	# if Classifier == 'Random Forest':
-	# 	st.sidebar.subheader("Model Hyperparameters")
-	# 	n_estimators =  st.sidebar.number_input("The number of trees in the forest",100,5000,step =10, key="n_estimators")
-	# 	max_depth = st.sidebar.number_input("The maximum depth of the tree",1,20,step=1,key="max_depth")
-	# 	bootstrap = st.sidebar.radio("Bootstrap samples when building trees",("True","False"), key="bootstrap")
+	if Classifier == 'Random Forest':
+		st.sidebar.subheader("Model Hyperparameters")
+		n_estimators =  st.sidebar.number_input("The number of trees in the forest",100,5000,step =10, key="n_estimators")
+		max_depth = st.sidebar.number_input("The maximum depth of the tree",1,20,step=1,key="max_depth")
+		bootstrap = st.sidebar.radio("Bootstrap samples when building trees",("True","False"), key="bootstrap")
         
-	# 	metrics = st.sidebar.multiselect("What metrics to plot?",('Confusion Matrix','ROC Curve','Precision-Recall Curve'))
+		metrics = st.sidebar.multiselect("What metrics to plot?",('Confusion Matrix','ROC Curve','Precision-Recall Curve'))
 
-	# 	if st.sidebar.button("Classify", key="classify"):
-	# 		st.subheader("LRandom Forest Results")
-	# 		model =RandomForestClassifier(n_estimators=n_estimators,max_depth=max_depth,bootstrap=bootstrap,n_jobs=-1)
-	# 		model.fit(X_train_tfidf, y_train)
-	# 		text_classifier = Pipeline([
-	# 			('bow',CountVectorizer()),  # strings to token integer counts
-	# 			('tfidf', TfidfTransformer()),  # integer counts to weighted TF-IDF scores
-	# 			('classifier',RandomForestClassifier(n_estimators=n_estimators,max_depth=max_depth,bootstrap=bootstrap,n_jobs=-1)),  # train on TF-IDF vectors w/ Linear Support Vector Classifier
-	# 			])
-	# 		text_classifier.fit(X_train, y_train)
-	# 		accuracy = text_classifier.score(X_test, y_test)
-	# 		y_pred  = text_classifier.predict(X_test)
-	# 		st.write("Accuracy: ", accuracy.round(2))
-	# 		st.write("Precision: ", precision_score(y_test, y_pred, labels=class_names,average='micro').round(2))
-	# 		st.write("Recall: ", recall_score(y_test, y_pred, labels=class_names,average='micro').round(2))
-	# 		plot_metrics(metrics)
+		if st.sidebar.button("Classify", key="classify"):
+			st.subheader("LRandom Forest Results")
+			model =RandomForestClassifier(n_estimators=n_estimators,max_depth=max_depth,bootstrap=bootstrap,n_jobs=-1)
+			model.fit(X_train_tfidf, y_train)
+			text_classifier = Pipeline([
+				('bow',CountVectorizer()),  # strings to token integer counts
+				('tfidf', TfidfTransformer()),  # integer counts to weighted TF-IDF scores
+				('classifier',RandomForestClassifier(n_estimators=n_estimators,max_depth=max_depth,bootstrap=bootstrap,n_jobs=-1)),  # train on TF-IDF vectors w/ Linear Support Vector Classifier
+				])
+			text_classifier.fit(X_train, y_train)
+			accuracy = text_classifier.score(X_test, y_test)
+			y_pred  = text_classifier.predict(X_test)
+			st.write("Accuracy: ", accuracy.round(2))
+			st.write("Precision: ", precision_score(y_test, y_pred, labels=class_names,average='micro').round(2))
+			st.write("Recall: ", recall_score(y_test, y_pred, labels=class_names,average='micro').round(2))
+			plot_metrics(metrics)
 
 	if Classifier == 'Linear Support Vector':
 		st.sidebar.subheader("Model Hyperparameters")
@@ -340,29 +340,29 @@ def main():
 			plot_metrics(metrics)
 
 
-	if Classifier == 'K-nearest neighbours':
-		st.sidebar.subheader("Model Hyperparameters")
-		n_neighbors = st.sidebar.slider("Number of nearest neighbours", 1, 50, key='n_neighbors')
+	# if Classifier == 'K-nearest neighbours':
+	# 	st.sidebar.subheader("Model Hyperparameters")
+	# 	n_neighbors = st.sidebar.slider("Number of nearest neighbours", 1, 50, key='n_neighbors')
         
-		metrics = st.sidebar.multiselect("What metrics to plot?",('Confusion Matrix','ROC Curve','Precision-Recall Curve'))
+	# 	metrics = st.sidebar.multiselect("What metrics to plot?",('Confusion Matrix','ROC Curve','Precision-Recall Curve'))
 
-		if st.sidebar.button("Classify", key="classify"):
-			st.subheader("K-nearest neighbours(KNN) Results")
-			model = KNeighborsClassifier(n_neighbors =n_neighbors)
-			model.fit(X_train_tfidf,y_train)
+	# 	if st.sidebar.button("Classify", key="classify"):
+	# 		st.subheader("K-nearest neighbours(KNN) Results")
+	# 		model = KNeighborsClassifier(n_neighbors =n_neighbors)
+	# 		model.fit(X_train_tfidf,y_train)
 
-			text_classifier = Pipeline([
-				('bow',CountVectorizer()),  # strings to token integer counts
-				('tfidf', TfidfTransformer()),  # integer counts to weighted TF-IDF scores
-				('classifier',KNeighborsClassifier(n_neighbors =n_neighbors)),  # train on TF-IDF vectors w/ K-nearest neighbours
-			])
-			text_classifier.fit(X_train, y_train)
-			accuracy = text_classifier.score(X_test, y_test)
-			y_pred  = text_classifier.predict(X_test)
-			st.write("Accuracy: ", accuracy.round(2))
-			st.write("Precision: ", precision_score(y_test, y_pred, labels=class_names,average='micro').round(2))
-			st.write("Recall: ", recall_score(y_test, y_pred, labels=class_names,average='micro').round(2))
-			plot_metrics(metrics)
+	# 		text_classifier = Pipeline([
+	# 			('bow',CountVectorizer()),  # strings to token integer counts
+	# 			('tfidf', TfidfTransformer()),  # integer counts to weighted TF-IDF scores
+	# 			('classifier',KNeighborsClassifier(n_neighbors =n_neighbors)),  # train on TF-IDF vectors w/ K-nearest neighbours
+	# 		])
+	# 		text_classifier.fit(X_train, y_train)
+	# 		accuracy = text_classifier.score(X_test, y_test)
+	# 		y_pred  = text_classifier.predict(X_test)
+	# 		st.write("Accuracy: ", accuracy.round(2))
+	# 		st.write("Precision: ", precision_score(y_test, y_pred, labels=class_names,average='micro').round(2))
+	# 		st.write("Recall: ", recall_score(y_test, y_pred, labels=class_names,average='micro').round(2))
+	# 		plot_metrics(metrics)
 	# Creates a main title and subheader on your page -
 	# these are static across all pages
 	#st.title("Tweet Classifer")
