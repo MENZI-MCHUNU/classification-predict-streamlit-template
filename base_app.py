@@ -106,7 +106,7 @@ def main():
 	X_test_tfidf = tfidf_transformer.transform(X_test_counts)
 	#X_test_tfidf = vectorizer.fit_transform(X_test)
 	STOP_WORDS = nltk.corpus.stopwords.words()
-	@st.cache(persist=True)
+	#@st.cache(persist=True)
 	def clean_sentence(val):
     	#"remove chars that are not letters or numbers, downcase, then remove stop words"
 		regex = re.compile('([^\s\w]|_)+')
@@ -119,7 +119,7 @@ def main():
             
 		sentence = " ".join(sentence)
 		return sentence
-	@st.cache(persist=True)
+	#@st.cache(persist=True)
 	def clean_dataframe(data):
     	#"drop nans, then apply 'clean_sentence' function "
 		data = data.dropna(how="any")
@@ -129,7 +129,7 @@ def main():
     
 		return data
 	data_v1 = clean_dataframe(data_v)	
-	@st.cache(persist=True)
+	#@st.cache(persist=True)
 	def build_corpus(data):
     	#"Creates a list of lists containing words from each sentence"
 		corpus = []
@@ -143,7 +143,7 @@ def main():
 	corpus = build_corpus(data_v1)  
 	modell = word2vec.Word2Vec(corpus, size=100, window=20, min_count=200, workers=4)
 	model11 = word2vec.Word2Vec(corpus, size=100, window=20, min_count=500, workers=4)
-	@st.cache(persist=True)
+	#@st.cache(persist=True)
 	def tsne_plot(model):
 		#Creates and TSNE model and plots it
 		labels = []
@@ -171,7 +171,7 @@ def main():
                      ha='right',
                      va='bottom')
 		st.pyplot()	
-	@st.cache(persist=True)
+	#@st.cache(persist=True)
 	def plot_metrics(metrics_list):
 		if 'Confusion Matrix' in metrics_list:
 			st.subheader("Confusion Matrix")
