@@ -69,13 +69,13 @@ from gensim.models import word2vec
 #tweet_cv = joblib.load(news_vectorizer) # loading your vectorizer from the pkl file
 
 # Load your raw data
-@st.cache(persist=True)
+#@st.cache(persist=True)
 raw = pd.read_csv("resources/train.csv")
-@st.cache(persist=True)
+#@st.cache(persist=True)
 data_v = raw.copy()
 m = pd.read_csv("model.csv")
 # Load clean dataset
-@st.cache(persist=True)
+#@st.cache(persist=True)
 clean_data = pd.read_csv("clean_data.csv")
 
 # The main function where we will build the actual app
