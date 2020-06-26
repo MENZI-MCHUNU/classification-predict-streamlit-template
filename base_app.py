@@ -394,12 +394,29 @@ def main():
 
 		if st.button("Classify"):
 			# Transforming user input with vectorizer
-			vect_text = tweet_cv.transform([tweet_text]).toarray()
+			#X_train = tweet_text.join(', ')
+			#vectorizer = TfidfVectorizer()
+			#count_vect = CountVectorizer(lowercase=False)
+			#user_text = count_vect.transform(tweet_text)
+			#tfidf_user_text = vectorizer.transform(tweet_text)
+			model = LinearSVC(C=1, multi_class='ovr')
+			#model.fit(x_train, y_train)
+			model.fit(X_train_tfidf,y_train)
+			text_classifier = Pipeline([
+					('bow',CountVectorizer(lowercase=False)),  # strings to token integer counts
+					('tfidf', TfidfTransformer()),  # integer counts to weighted TF-IDF scores
+					('classifier',LinearSVC()),  # train on TF-IDF vectors w/ Linear Support Vector Classifier
+			])
+			text_classifier.fit(X_train, y_train)
+			vect_text = tweet_text
 			# Load your .pkl file with the model of your choice + make predictions
 			# Try loading in multiple models to give the user a choice
-			predictor = joblib.load(open(os.path.join("resources/Logistic_regression.pkl"),"rb"))
-			prediction = predictor.predict(vect_text)
-
+			#predictor = joblib.load(open(os.path.join("resources/Logistic_regression.pkl"),"rb"))
+			#prediction = predictor.predict(vect_text)
+			#predictor = joblib.load(open(os.path.join("resources/Linear_Support_Vector_Classifier_model.pkl"),"rb"))
+			predictor = joblib.load(open(os.path.join("resources/Linear_Support1.pkl"),"rb"))
+			#model = joblib.load('model_question_topic.pkl')
+			prediction = text_classifier.predict(pd.Series(tweet_text.split(",")))
 			# When model has successfully run, will print prediction
 			# You can use a dictionary or similar structure to make this output
 			# more human interpretable.
