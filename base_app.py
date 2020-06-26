@@ -58,9 +58,7 @@ from sklearn.manifold import TSNE
 pd.options.mode.chained_assignment = None 
 from gensim import models
 from gensim.models import word2vec
-import plotly.express as px
-import plotly.graph_objects as go
-from plotly.graph_objs import *
+
 #pip install wordCloud
  #import nltk
  #nltk.download('stopwords')
