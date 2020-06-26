@@ -221,34 +221,34 @@ def main():
 
 	class_names = [-1, 0, 1, 2]
 	st.sidebar.subheader("Choose Classifier")
-	Classifier = st.sidebar.selectbox("Classifier", ("Logistic Regression","Random Forest","Linear Support Vector","K-nearest neighbours"))
+	Classifier = st.sidebar.selectbox("Classifier", ("Logistic Regression","Linear Support Vector","K-nearest neighbours"))
     
-	if Classifier == 'Support Vector Machine (SVM)':
-		st.sidebar.subheader("Model Hyperparameters")
-		C = st.sidebar.number_input("C (Regularization parameter)",0.01,10.0, step=0.01, key='C')
-		kernel = st.sidebar.radio("Kernel",("rbf","linear"),key='kernel')
-		gamma = st.sidebar.radio("Gamma (Kernel Coefficient)", ("scale","auto"),key ='gamma')
+	# if Classifier == 'Support Vector Machine (SVM)':
+	# 	st.sidebar.subheader("Model Hyperparameters")
+	# 	C = st.sidebar.number_input("C (Regularization parameter)",0.01,10.0, step=0.01, key='C')
+	# 	kernel = st.sidebar.radio("Kernel",("rbf","linear"),key='kernel')
+	# 	gamma = st.sidebar.radio("Gamma (Kernel Coefficient)", ("scale","auto"),key ='gamma')
         
-		metrics = st.sidebar.multiselect("What metrics to plot?",('Confusion Matrix','ROC Curve','Precision-Recall Curve'))
+	# 	metrics = st.sidebar.multiselect("What metrics to plot?",('Confusion Matrix','ROC Curve','Precision-Recall Curve'))
 
-		if st.sidebar.button("Classify", key="classify"):
-			st.subheader("Support Vector Machine (SVM) Results")
-			model = SVC(C=C, kernel=kernel, gamma=gamma)
-			#model.fit(x_train, y_train)
-			model.fit(X_train_tfidf,y_train)
+	# 	if st.sidebar.button("Classify", key="classify"):
+	# 		st.subheader("Support Vector Machine (SVM) Results")
+	# 		model = SVC(C=C, kernel=kernel, gamma=gamma)
+	# 		#model.fit(x_train, y_train)
+	# 		model.fit(X_train_tfidf,y_train)
 
-			text_classifier = Pipeline([
-    			('bow',CountVectorizer()),  # strings to token integer counts
-    			('tfidf', TfidfTransformer()),  # integer counts to weighted TF-IDF scores
-    			('classifier',SVC(C=C, kernel=kernel, gamma=gamma)),  # train on TF-IDF vectors w/ Linear Support Vector Classifier
-			])
-			text_classifier.fit(X_train, y_train)
-			accuracy = text_classifier.score(X_test, y_test)
-			y_pred  = text_classifier.predict(X_test)
-			st.write("Accuracy: ", accuracy.round(2))
-			st.write("Precision: ", precision_score(y_test, y_pred, labels=class_names).round(2))
-			st.write("Recall: ", recall_score(y_test, y_pred, labels=class_names).round(2))
-			plot_metrics(metrics)	
+	# 		text_classifier = Pipeline([
+    # 			('bow',CountVectorizer()),  # strings to token integer counts
+    # 			('tfidf', TfidfTransformer()),  # integer counts to weighted TF-IDF scores
+    # 			('classifier',SVC(C=C, kernel=kernel, gamma=gamma)),  # train on TF-IDF vectors w/ Linear Support Vector Classifier
+	# 		])
+	# 		text_classifier.fit(X_train, y_train)
+	# 		accuracy = text_classifier.score(X_test, y_test)
+	# 		y_pred  = text_classifier.predict(X_test)
+	# 		st.write("Accuracy: ", accuracy.round(2))
+	# 		st.write("Precision: ", precision_score(y_test, y_pred, labels=class_names).round(2))
+	# 		st.write("Recall: ", recall_score(y_test, y_pred, labels=class_names).round(2))
+	# 		plot_metrics(metrics)	
 
 	if Classifier == 'Logistic Regression':
 		st.sidebar.subheader("Model Hyperparameters")
@@ -289,30 +289,30 @@ def main():
 			# plt.xlabel("Value of C for LogisticRegression")
 			# plt.ylabel("Testing Accuracy")
 			# st.pyplot()
-	if Classifier == 'Random Forest':
-		st.sidebar.subheader("Model Hyperparameters")
-		n_estimators =  st.sidebar.number_input("The number of trees in the forest",100,5000,step =10, key="n_estimators")
-		max_depth = st.sidebar.number_input("The maximum depth of the tree",1,20,step=1,key="max_depth")
-		bootstrap = st.sidebar.radio("Bootstrap samples when building trees",("True","False"), key="bootstrap")
+	# if Classifier == 'Random Forest':
+	# 	st.sidebar.subheader("Model Hyperparameters")
+	# 	n_estimators =  st.sidebar.number_input("The number of trees in the forest",100,5000,step =10, key="n_estimators")
+	# 	max_depth = st.sidebar.number_input("The maximum depth of the tree",1,20,step=1,key="max_depth")
+	# 	bootstrap = st.sidebar.radio("Bootstrap samples when building trees",("True","False"), key="bootstrap")
         
-		metrics = st.sidebar.multiselect("What metrics to plot?",('Confusion Matrix','ROC Curve','Precision-Recall Curve'))
+	# 	metrics = st.sidebar.multiselect("What metrics to plot?",('Confusion Matrix','ROC Curve','Precision-Recall Curve'))
 
-		if st.sidebar.button("Classify", key="classify"):
-			st.subheader("LRandom Forest Results")
-			model =RandomForestClassifier(n_estimators=n_estimators,max_depth=max_depth,bootstrap=bootstrap,n_jobs=-1)
-			model.fit(X_train_tfidf, y_train)
-			text_classifier = Pipeline([
-				('bow',CountVectorizer()),  # strings to token integer counts
-				('tfidf', TfidfTransformer()),  # integer counts to weighted TF-IDF scores
-				('classifier',RandomForestClassifier(n_estimators=n_estimators,max_depth=max_depth,bootstrap=bootstrap,n_jobs=-1)),  # train on TF-IDF vectors w/ Linear Support Vector Classifier
-				])
-			text_classifier.fit(X_train, y_train)
-			accuracy = text_classifier.score(X_test, y_test)
-			y_pred  = text_classifier.predict(X_test)
-			st.write("Accuracy: ", accuracy.round(2))
-			st.write("Precision: ", precision_score(y_test, y_pred, labels=class_names,average='micro').round(2))
-			st.write("Recall: ", recall_score(y_test, y_pred, labels=class_names,average='micro').round(2))
-			plot_metrics(metrics)
+	# 	if st.sidebar.button("Classify", key="classify"):
+	# 		st.subheader("LRandom Forest Results")
+	# 		model =RandomForestClassifier(n_estimators=n_estimators,max_depth=max_depth,bootstrap=bootstrap,n_jobs=-1)
+	# 		model.fit(X_train_tfidf, y_train)
+	# 		text_classifier = Pipeline([
+	# 			('bow',CountVectorizer()),  # strings to token integer counts
+	# 			('tfidf', TfidfTransformer()),  # integer counts to weighted TF-IDF scores
+	# 			('classifier',RandomForestClassifier(n_estimators=n_estimators,max_depth=max_depth,bootstrap=bootstrap,n_jobs=-1)),  # train on TF-IDF vectors w/ Linear Support Vector Classifier
+	# 			])
+	# 		text_classifier.fit(X_train, y_train)
+	# 		accuracy = text_classifier.score(X_test, y_test)
+	# 		y_pred  = text_classifier.predict(X_test)
+	# 		st.write("Accuracy: ", accuracy.round(2))
+	# 		st.write("Precision: ", precision_score(y_test, y_pred, labels=class_names,average='micro').round(2))
+	# 		st.write("Recall: ", recall_score(y_test, y_pred, labels=class_names,average='micro').round(2))
+	# 		plot_metrics(metrics)
 
 	if Classifier == 'Linear Support Vector':
 		st.sidebar.subheader("Model Hyperparameters")
