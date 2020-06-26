@@ -65,8 +65,8 @@ from gensim.models import word2vec
  #nltk.download('wordnet')
  #nltk.download('stopwords')
 # Vectorizer
-news_vectorizer = open("resources/tfidfvect.pkl","rb")
-tweet_cv = joblib.load(news_vectorizer) # loading your vectorizer from the pkl file
+#news_vectorizer = open("resources/tfidfvect.pkl","rb")
+#tweet_cv = joblib.load(news_vectorizer) # loading your vectorizer from the pkl file
 
 # Load your raw data
 raw = pd.read_csv("resources/train.csv")
@@ -415,7 +415,7 @@ def main():
 				#predictor = joblib.load(open(os.path.join("resources/Logistic_regression.pkl"),"rb"))
 				#prediction = predictor.predict(vect_text)
 				#predictor = joblib.load(open(os.path.join("resources/Linear_Support_Vector_Classifier_model.pkl"),"rb"))
-				predictor = joblib.load(open(os.path.join("resources/Linear_Support1.pkl"),"rb"))
+				#predictor = joblib.load(open(os.path.join("resources/Linear_Support1.pkl"),"rb"))
 				#model = joblib.load('model_question_topic.pkl')
 				prediction = text_classifier.predict(pd.Series(tweet_text.split(",")))
 				# When model has successfully run, will print prediction
