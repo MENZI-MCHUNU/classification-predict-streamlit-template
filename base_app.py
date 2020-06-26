@@ -368,7 +368,7 @@ def main():
 
 	# Creating sidebar with selection box -
 	# you can create multiple pages this way
-	options = ["Prediction", "Information","EDA","TSNE plot"]
+	options = ["About Machine Learning App","Instruction of use","Prediction", "Information","EDA","TSNE plot"]
 	selection = st.sidebar.selectbox("Choose Option", options)
 	if selection == "TSNE plot":
 		if st.checkbox('Show TSNE plot'):
@@ -391,6 +391,8 @@ def main():
 		st.info("Prediction with ML Models")
 		# Creating a text box for user input
 		tweet_text = st.text_area("Enter Text","Type Here")
+		all_ml_models = ["Linear Support Vector","Random Forest","LogisticRegression","K-nearest neighbour"]
+		model_choice = st.selectbox("Choose ML Model",all_ml_models)
 
 		if st.button("Classify"):
 			# Transforming user input with vectorizer
@@ -399,28 +401,42 @@ def main():
 			#count_vect = CountVectorizer(lowercase=False)
 			#user_text = count_vect.transform(tweet_text)
 			#tfidf_user_text = vectorizer.transform(tweet_text)
-			model = LinearSVC(C=1, multi_class='ovr')
-			#model.fit(x_train, y_train)
-			model.fit(X_train_tfidf,y_train)
-			text_classifier = Pipeline([
+			if model_choice == 'Linear Support Vector':
+				model = LinearSVC(C=1, multi_class='ovr')
+				#model.fit(x_train, y_train)
+				model.fit(X_train_tfidf,y_train)
+				text_classifier = Pipeline([
 					('bow',CountVectorizer(lowercase=False)),  # strings to token integer counts
 					('tfidf', TfidfTransformer()),  # integer counts to weighted TF-IDF scores
 					('classifier',LinearSVC()),  # train on TF-IDF vectors w/ Linear Support Vector Classifier
-			])
-			text_classifier.fit(X_train, y_train)
-			vect_text = tweet_text
-			# Load your .pkl file with the model of your choice + make predictions
-			# Try loading in multiple models to give the user a choice
-			#predictor = joblib.load(open(os.path.join("resources/Logistic_regression.pkl"),"rb"))
-			#prediction = predictor.predict(vect_text)
-			#predictor = joblib.load(open(os.path.join("resources/Linear_Support_Vector_Classifier_model.pkl"),"rb"))
-			predictor = joblib.load(open(os.path.join("resources/Linear_Support1.pkl"),"rb"))
-			#model = joblib.load('model_question_topic.pkl')
-			prediction = text_classifier.predict(pd.Series(tweet_text.split(",")))
-			# When model has successfully run, will print prediction
-			# You can use a dictionary or similar structure to make this output
-			# more human interpretable.
+				])
+				text_classifier.fit(X_train, y_train)
+				vect_text = tweet_text
+				# Load your .pkl file with the model of your choice + make predictions
+				# Try loading in multiple models to give the user a choice
+				#predictor = joblib.load(open(os.path.join("resources/Logistic_regression.pkl"),"rb"))
+				#prediction = predictor.predict(vect_text)
+				#predictor = joblib.load(open(os.path.join("resources/Linear_Support_Vector_Classifier_model.pkl"),"rb"))
+				predictor = joblib.load(open(os.path.join("resources/Linear_Support1.pkl"),"rb"))
+				#model = joblib.load('model_question_topic.pkl')
+				prediction = text_classifier.predict(pd.Series(tweet_text.split(",")))
+				# When model has successfully run, will print prediction
+				# You can use a dictionary or similar structure to make this output
+				# more human interpretable.
+			elif  model_choice == 'Random Forest':
+				model =RandomForestClassifier()
+				model.fit(X_train_tfidf, y_train)
+				text_classifier = Pipeline([
+						('bow',CountVectorizer(lowercase=False)),  # strings to token integer counts
+						('tfidf', TfidfTransformer()),  # integer counts to weighted TF-IDF scores
+						('classifier',RandomForestClassifier()),  # train on TF-IDF vectors w/ Linear Support Vector Classifier
+				])
+				text_classifier.fit(X_train, y_train)			
+				prediction = text_classifier.predict(pd.Series(tweet_text.split(",")))
+
+
 			st.success("Text Categorized as: {}".format(prediction))
+
 	# Building out the EDA page	
 	if selection == "EDA":
 		#st.title("Insights on people's peception on Climate Change ")
