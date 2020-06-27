@@ -82,9 +82,6 @@ clean_data = pd.read_csv("clean_data.csv")
 def main():
 	"""Tweet Classifier App with Streamlit """
 	st.sidebar.title("Multiclass Classification Web App")
-	st.sidebar.markdown("Is the tweet News , Pro , Neutral or Anti climate-change ? ")
-
-
     # Split the data
 	X = clean_data['lemmatized_tweet']
 	y =clean_data['sentiment']
