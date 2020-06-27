@@ -616,7 +616,7 @@ def main():
 	if selection == "Instruction of use":
 		st.title("Instructions")
 		st.markdown('<p>When the application opens the first page you will see is the prediction page.')
-		st.image('images/prediction_p.png', width=500,height=500)
+		st.image('images/prediction_p.png', width=500)
 		st.markdown(' Here as a user you will put your tweet on the text box and then choose a machine learning algorithm to classify the tweet and then when it has been selected then you can press the classify button .\
 		You can find more about machine learning and the algorithm used in this application on the "About Machine Learning App" page.\
 		On the top right you will see an arrow and when you click it you will see a sidebar .\
