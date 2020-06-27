@@ -393,7 +393,7 @@ def main():
 		st.info("Prediction with ML Models")
 		# Creating a text box for user input
 		tweet_text = st.text_area("Enter Text","Type Here")
-		all_ml_models = ["Linear Support Vector","Random Forest","LogisticRegression","K-nearest neighbour"]
+		all_ml_models = ["Linear Support Vector","LogisticRegression","K-nearest neighbour"]
 		model_choice = st.selectbox("Choose ML Model",all_ml_models)
 
 		if st.button("Classify"):
@@ -425,17 +425,6 @@ def main():
 				# When model has successfully run, will print prediction
 				# You can use a dictionary or similar structure to make this output
 				# more human interpretable.
-			elif  model_choice == 'Random Forest':
-				model =RandomForestClassifier()
-				model.fit(X_train_tfidf, y_train)
-				text_classifier = Pipeline([
-						('bow',CountVectorizer(lowercase=False)),  # strings to token integer counts
-						('tfidf', TfidfTransformer()),  # integer counts to weighted TF-IDF scores
-						('classifier',RandomForestClassifier()),  # train on TF-IDF vectors w/ Linear Support Vector Classifier
-				])
-				text_classifier.fit(X_train, y_train)			
-				prediction = text_classifier.predict(pd.Series(tweet_text.split(",")))
-			
 			elif  model_choice == 'K-nearest neighbour':
 				model = KNeighborsClassifier(n_neighbors = 3)
 				model.fit(X_train_tfidf, y_train)
@@ -609,13 +598,12 @@ def main():
 		st.markdown('<p>Machine learning (ML) is the study of computer algorithms that improve automatically through experience.It is seen as a subset of artificial intelligence. Machine learning algorithms build a mathematical model based on sample data, known as "training data", in order to make predictions or decisions without being explicitly programmed to do so.Machine learning algorithms are used in a wide variety of applications, such as email filtering and computer vision, where it is difficult or infeasible to develop conventional algorithms to perform the needed tasks. </p>', unsafe_allow_html=True)
 		st.subheader('Machine Learning Algorithms')
 		st.markdown('<p>A machine learning (ML) algorithm is essentially a process or sets of procedures that helps a model adapt to the data given an objective. An ML algorithm normally specifies the way the data is transformed from input to output and how the model learns the appropriate mapping from input to output. </p>', unsafe_allow_html=True)
-		st.subheader('climate change tweet Classification')		
+		st.subheader('Climate change tweet Classification')		
 		st.markdown('<p>This Application is used for classify tweets into four different categories.The tweet can be News , Pro ,Neutral or Anti . The four categories are described as follows:</p>', unsafe_allow_html=True)	
 		st.markdown('<p>2(News): the tweet links to factual news about climate change </p>', unsafe_allow_html=True)
 		st.markdown('<p>1(Pro): the tweet supports the belief of man-made climate change </p>', unsafe_allow_html=True)
 		st.markdown('<p>0(Neutral): the tweet neither supports nor refutes the belief of man-made climate change </p>', unsafe_allow_html=True)
 		st.markdown('<p>-1(Anti): the tweet does not believe in man-made climate change </p>', unsafe_allow_html=True)
-		st.subheader('')
 		st.markdown('<p> </p>', unsafe_allow_html=True)
 # Required to let Streamlit instantiate our web app.  
 if __name__ == '__main__':
