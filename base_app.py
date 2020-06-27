@@ -622,8 +622,9 @@ def main():
 		st.markdown('You can find more about machine learning and the algorithm used in this application on the "About Machine Learning App" page.\
 		On the top right you will see an arrow and when you click it you will see a sidebar .\
 		The sidebar has a title then a selection box .\
-		When you click the selection box you will see all the pages on the app the you can select the page you want to see.\
-		The EDA page is for all the insights we found on the dataset we used.\
+		When you click the selection box you will see all the pages on the app the you can select the page you want to see.')
+		st.image('images/algorithms.png', width=600)
+		st.markdown('The EDA page is for all the insights we found on the dataset we used.\
 		We have another page for t-sne plot of the words you can find on the dataset we used.\
 		Below the selection box we have a section for the algorithms and their hyperparameters and you can change the hyperparameters to see how the Accuracy, Recall , confusion matrix , then after you change the hyperparameters you can plot the confusion matrix and then press the classify button to see the recall , accuracy and confusion matrix.', unsafe_allow_html=True)		
 # Required to let Streamlit instantiate our web app.  
