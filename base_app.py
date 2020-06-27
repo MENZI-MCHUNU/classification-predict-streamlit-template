@@ -604,7 +604,18 @@ def main():
 		st.markdown('<p>1(Pro): the tweet supports the belief of man-made climate change </p>', unsafe_allow_html=True)
 		st.markdown('<p>0(Neutral): the tweet neither supports nor refutes the belief of man-made climate change </p>', unsafe_allow_html=True)
 		st.markdown('<p>-1(Anti): the tweet does not believe in man-made climate change </p>', unsafe_allow_html=True)
-		st.markdown('<p> </p>', unsafe_allow_html=True)
+		st.markdown('<p>We use machine learning algorithms to classify the tweets so for this application we use the following algorithms to classify tweets: </p>', unsafe_allow_html=True)
+		st.markdown('<p>LogisticRegression </p>', unsafe_allow_html=True)	
+		st.markdown('<p>Logistic regression is a supervised learning classification algorithm used to predict the probability of a target variable. The nature of target or dependent variable is dichotomous, which means there would be only two possible classes. </p>', unsafe_allow_html=True)
+		st.markdown('<p>K-nearest neighbour</p>', unsafe_allow_html=True)
+		st.markdown('<p>K-nearest neighbors (KNN) algorithm is a type of supervised ML algorithm which can be used for both classification as well as regression predictive problems. However, it is mainly used for classification predictive problems in industry. </p>', unsafe_allow_html=True)	
+		st.markdown('<p>Random forest</p>', unsafe_allow_html=True)	
+		st.markdown('<p>Random forest is a supervised learning algorithm which is used for both classification as well as regression. But however, it is mainly used for classification problems. As we know that a forest is made up of trees and more trees means more robust forest. Similarly, random forest algorithm creates decision trees on data samples and then gets the prediction from each of them and finally selects the best solution by means of voting. It is an ensemble method which is better than a single decision tree because it reduces the over-fitting by averaging the result. </p>', unsafe_allow_html=True)	
+		st.markdown('<p>Linear support vector classifier</p>', unsafe_allow_html=True)	
+		st.markdown('<p>Support vector machines (SVMs) are powerful yet flexible supervised machine learning algorithms which are used both for classification and regression. But generally, they are used in classification problems. Lately, they are extremely popular because of their ability to handle multiple continuous and categorical variables. </p>', unsafe_allow_html=True)	
+		st.markdown('<p> </p>', unsafe_allow_html=True)	
+		st.markdown('<p> </p>', unsafe_allow_html=True)	
+
 # Required to let Streamlit instantiate our web app.  
 if __name__ == '__main__':
 	main()
