@@ -604,7 +604,8 @@ def main():
 			plt.title('Top 10 Hashtags in Factual Tweets', fontsize=14)
 			st.pyplot()	
 	if selection == "About Machine Learning App":
-		st.title("Welcome to the climate change Classification Machine Learning App")	
+		st.title("Welcome to the climate change Classification Machine Learning App")
+		st.markdown('<p>This Application is for classify tweets into four different categories.The tweet can be News , Pro ,Neutral or Anti . The four categories are described as follows:</p>', unsafe_allow_html=True)	
 		st.text("This Application is for classify tweets into four different categories.The tweet can be News , Pro ,Neutral or Anti . The four categories are described as follows:")
 		st.text("2(News): the tweet links to factual news about climate change ")
 		st.text("1(Pro): the tweet supports the belief of man-made climate change")
