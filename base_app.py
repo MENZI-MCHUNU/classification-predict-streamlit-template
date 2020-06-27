@@ -613,7 +613,7 @@ def main():
 		st.markdown('<p>Random forest is a supervised learning algorithm which is used for both classification as well as regression. But however, it is mainly used for classification problems. As we know that a forest is made up of trees and more trees means more robust forest. Similarly, random forest algorithm creates decision trees on data samples and then gets the prediction from each of them and finally selects the best solution by means of voting. It is an ensemble method which is better than a single decision tree because it reduces the over-fitting by averaging the result. </p>', unsafe_allow_html=True)	
 		st.markdown('<p><strong>Linear support vector classifier</strong></p>', unsafe_allow_html=True)	
 		st.markdown('<p>Support vector machines (SVMs) are powerful yet flexible supervised machine learning algorithms which are used both for classification and regression. But generally, they are used in classification problems. Lately, they are extremely popular because of their ability to handle multiple continuous and categorical variables. </p>', unsafe_allow_html=True)	
-		st.markdown('<p>For more information about building data Apps Please go to :<a href='https://www.streamlit.io/'>Here</a></p>', unsafe_allow_html=True)	
+		st.markdown('<p>For more information about building data Apps Please go to :<a href="https://www.streamlit.io/">Here</a></p>', unsafe_allow_html=True)	
 		st.markdown('<p> </p>', unsafe_allow_html=True)	
 
 # Required to let Streamlit instantiate our web app.  
