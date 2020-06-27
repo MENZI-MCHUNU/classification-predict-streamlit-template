@@ -82,7 +82,7 @@ clean_data = pd.read_csv("clean_data.csv")
 def main():
 	"""Tweet Classifier App with Streamlit """
 	st.sidebar.title("Multiclass Classification Web App")
-	options = ["About Machine Learning App","Instruction of use","Prediction", "Information","EDA","TSNE plot"]
+	options = ["Prediction", "Information","EDA","TSNE plot","About Machine Learning App","Instruction of use"]
 	selection = st.sidebar.selectbox("Choose Option", options)
     # Split the data
 	X = clean_data['lemmatized_tweet']
@@ -613,6 +613,16 @@ def main():
 		st.markdown('<p>For more information about building data Apps Please go to :<a href="https://www.streamlit.io/">Here</a></p>', unsafe_allow_html=True)	
 		st.markdown('<p> </p>', unsafe_allow_html=True)	
 
+	if selection == "Instruction of use":
+		st.title("Instructions")
+		st.markdown('<p>When the application opens the first page you will see is the prediction page. Here as a user you will put your tweet on the text box and then choose a machine learning algorithm to classify the tweet and then when it has been selected then you can press the classify button .\
+		You can find more about machine learning and the algorithm used in this application on the "About Machine Learning App" page.\
+		On the top right you will see an arrow and when you click it you will see a sidebar .\
+		The sidebar has a title then a selection box .\
+		When you click the selection box you will see all the pages on the app the you can select the page you want to see.\
+		The EDA page is for all the insights we found on the dataset we used.\
+		We have another page for t-sne plot of the words you can find on the dataset we used.\
+		Below the selection box we have a section for the algorithms and their hyperparameters and you can change the hyperparameters to see how the Accuracy, Recall , confusion matrix , then after you change the hyperparameters you can plot the confusion matrix and then press the classify button to see the recall , accuracy and confusion matrix. </p>', unsafe_allow_html=True)		
 # Required to let Streamlit instantiate our web app.  
 if __name__ == '__main__':
 	main()
