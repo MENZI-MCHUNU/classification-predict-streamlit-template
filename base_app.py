@@ -445,8 +445,20 @@ def main():
 						('classifier',KNeighborsClassifier(n_neighbors = 3)),  # train on TF-IDF vectors w/ Linear Support Vector Classifier
 				])
 				text_classifier.fit(X_train, y_train)			
+				
 				prediction = text_classifier.predict(pd.Series(tweet_text.split(",")))
 
+			elif model_choice == 'LogisticRegression':
+				model =  LogisticRegression(C=1, max_iter=10)
+				model.fit(X_train_tfidf,y_train)
+				text_classifier = Pipeline([
+						('bow',CountVectorizer(lowercase=False)),  # strings to token integer counts
+						('tfidf', TfidfTransformer()),  # integer counts to weighted TF-IDF scores
+						('classifier',LogisticRegression(C=1, max_iter=10)),  # train on TF-IDF vectors w/ Linear Support Vector Classifier
+				])
+				text_classifier.fit(X_train, y_train)
+				prediction = text_classifier.predict(pd.Series(tweet_text.split(",")))
+				
 			st.success("Text Categorized as: {}".format(prediction))
 
 	# Building out the EDA page	
