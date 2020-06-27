@@ -603,7 +603,8 @@ def main():
 			plt.setp(ax.get_xticklabels(),rotation=17, fontsize=10)
 			plt.title('Top 10 Hashtags in Factual Tweets', fontsize=14)
 			st.pyplot()	
-		
+	if selection == "About Machine Learning App":
+		st.title("Welcome Text Classification Machine Learning App")	
 # Required to let Streamlit instantiate our web app.  
 if __name__ == '__main__':
 	main()
