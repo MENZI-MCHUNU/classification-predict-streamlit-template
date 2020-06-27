@@ -82,6 +82,8 @@ clean_data = pd.read_csv("clean_data.csv")
 def main():
 	"""Tweet Classifier App with Streamlit """
 	st.sidebar.title("Multiclass Classification Web App")
+	options = ["About Machine Learning App","Instruction of use","Prediction", "Information","EDA","TSNE plot"]
+	selection = st.sidebar.selectbox("Choose Option", options)
     # Split the data
 	X = clean_data['lemmatized_tweet']
 	y =clean_data['sentiment']
@@ -367,8 +369,6 @@ def main():
 
 	# Creating sidebar with selection box -
 	# you can create multiple pages this way
-	options = ["About Machine Learning App","Instruction of use","Prediction", "Information","EDA","TSNE plot"]
-	selection = st.sidebar.selectbox("Choose Option", options)
 	if selection == "TSNE plot":
 		if st.checkbox('Show TSNE plot'):
 			#md = np.array(m)
