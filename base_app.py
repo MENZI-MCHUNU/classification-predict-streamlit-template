@@ -605,11 +605,17 @@ def main():
 			st.pyplot()	
 	if selection == "About Machine Learning App":
 		st.title("Welcome to the climate change Classification Machine Learning App")
-		st.markdown('<p>This Application is for classify tweets into four different categories.The tweet can be News , Pro ,Neutral or Anti . The four categories are described as follows:</p>', unsafe_allow_html=True)	
+		st.subheader('Machine Learning')
+		st.markdown('<p>Machine learning (ML) is the study of computer algorithms that improve automatically through experience.It is seen as a subset of artificial intelligence. Machine learning algorithms build a mathematical model based on sample data, known as "training data", in order to make predictions or decisions without being explicitly programmed to do so.Machine learning algorithms are used in a wide variety of applications, such as email filtering and computer vision, where it is difficult or infeasible to develop conventional algorithms to perform the needed tasks. </p>', unsafe_allow_html=True)
+		st.subheader('Machine Learning Algorithms')
+		st.markdown('<p>A machine learning (ML) algorithm is essentially a process or sets of procedures that helps a model adapt to the data given an objective. An ML algorithm normally specifies the way the data is transformed from input to output and how the model learns the appropriate mapping from input to output. </p>', unsafe_allow_html=True)
+		st.subheader('climate change tweet Classification')		
+		st.markdown('<p>This Application is used for classify tweets into four different categories.The tweet can be News , Pro ,Neutral or Anti . The four categories are described as follows:</p>', unsafe_allow_html=True)	
 		st.markdown('<p>2(News): the tweet links to factual news about climate change </p>', unsafe_allow_html=True)
 		st.markdown('<p>1(Pro): the tweet supports the belief of man-made climate change </p>', unsafe_allow_html=True)
 		st.markdown('<p>0(Neutral): the tweet neither supports nor refutes the belief of man-made climate change </p>', unsafe_allow_html=True)
 		st.markdown('<p>-1(Anti): the tweet does not believe in man-made climate change </p>', unsafe_allow_html=True)
+		st.subheader('')
 		st.markdown('<p> </p>', unsafe_allow_html=True)
 # Required to let Streamlit instantiate our web app.  
 if __name__ == '__main__':
