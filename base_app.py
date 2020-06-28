@@ -58,6 +58,7 @@ from sklearn.manifold import TSNE
 pd.options.mode.chained_assignment = None 
 from gensim import models
 from gensim.models import word2vec
+from yellowbrick.classifier import ClassificationReport
 
 #pip install wordCloud
  #import nltk
@@ -217,6 +218,12 @@ def main():
 			st.subheader("Precision-Recall Curve")
 			plot_precision_recall_curve(model, X_test_tfidf, y_test)
 			st.pyplot()
+
+		if 'Classification report' in metrics_list:
+			st.subheader("Classification report")
+			ClassificationReport(model, classes=[-1, 0, 1, 2], support=True)
+			st.pyplot() #classification_report(y_test, y_pred)	
+
 
 	class_names = [-1, 0, 1, 2]
 	st.sidebar.subheader("Choose Classifier")
@@ -625,10 +632,10 @@ def main():
 		When you click the selection box you will see all the pages on the app the you can select the page you want to see.')
 		st.image('images/pages.png', width=500)
 		st.markdown('The EDA page is for all the insights we found on the dataset we used.')
-		st.image('images/eda.png', width=600)
+		st.image('images/eda.png', width=700)
 		st.markdown('We have another page for t-sne plot of the words you can find on the dataset we used.')
-		st.image('images/t-sne.png', width=600)
-		st.markdown('Below the selection box we have a section for the algorithms and their hyperparameters and you can change the hyperparameters to see how the Accuracy, Recall , confusion matrix , then after you change the hyperparameters you can plot the confusion matrix and then press the classify button to see the recall , accuracy and confusion matrix.', unsafe_allow_html=True)		
+		st.image('images/t-sne.png', width=700)
+		st.markdown('Below the selection box we have a section for the algorithms and their hyperparameters and you can change the hyperparameters to see how the Accuracy,Precision, Recall , confusion matrix , then after you change the hyperparameters you can plot the confusion matrix and then press the classify button to see the recall , accuracy ,precision and confusion matrix.', unsafe_allow_html=True)		
 		st.image('images/classify.png', width=600)
 # Required to let Streamlit instantiate our web app.  
 if __name__ == '__main__':
