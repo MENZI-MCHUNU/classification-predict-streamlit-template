@@ -218,7 +218,7 @@ def main():
 		max_iter = st.sidebar.slider("Maximum number of iterations", 100, 500, key='max_iter')
 
         
-		metrics = st.sidebar.multiselect("Plot Confusion Matrix",('Confusion Matrix'))
+		metrics = st.sidebar.selectbox("Plot Confusion Matrix",('Confusion Matrix'))
 
 		if st.sidebar.button("Classify", key="classify"):
 			st.subheader("Logistic Regression Results")
@@ -257,7 +257,7 @@ def main():
 		max_depth = st.sidebar.number_input("The maximum depth of the tree",1,20,step=1,key="max_depth")
 		bootstrap = st.sidebar.radio("Bootstrap samples when building trees",("True","False"), key="bootstrap")
         
-		metrics = st.sidebar.multiselect("Plot confusion matrix",('Confusion Matrix'))
+		metrics = st.sidebar.selectbox("Plot confusion matrix",('Confusion Matrix'))
 
 		if st.sidebar.button("Classify", key="classify"):
 			st.subheader("LRandom Forest Results")
@@ -280,7 +280,7 @@ def main():
 		st.sidebar.subheader("Model Hyperparameters")
 		C = st.sidebar.number_input("C (Regularization parameter)",0.01,10.0, step=0.01, key='C')
         
-		metrics = st.sidebar.multiselect("Plot confusion matrix",('Confusion Matrix'))
+		metrics = st.sidebar.selectbox("Plot confusion matrix",('Confusion Matrix'))
 
 		if st.sidebar.button("Classify", key="classify"):
 			st.subheader("Linear Support Vector Classifier(LSVC) Results")
