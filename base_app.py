@@ -59,24 +59,18 @@ pd.options.mode.chained_assignment = None
 from gensim import models
 from gensim.models import word2vec
 
-
+# Before you can run this script on your local computer please download the following 
 #pip install wordCloud
- #import nltk
  #nltk.download('stopwords')
  #nltk.download('wordnet')
- #nltk.download('stopwords')
-# Vectorizer
-#news_vectorizer = open("resources/tfidfvect.pkl","rb")
-#tweet_cv = joblib.load(news_vectorizer) # loading your vectorizer from the pkl file
+
 
 # Load your raw data
-#@st.cache(persist=True)
 raw = pd.read_csv("resources/train.csv")
-#@st.cache(persist=True)
+# copy raw data
 data_v = raw.copy()
-m = pd.read_csv("model.csv")
+#m = pd.read_csv("model.csv")
 # Load clean dataset
-#@st.cache(persist=True)
 clean_data = pd.read_csv("clean_data.csv")
 
 # The main function where we will build the actual app
@@ -177,7 +171,6 @@ def main():
 			st.subheader("Confusion Matrix")
 			class_names = [-1, 0, 1, 2]# name  of classes
 			plot_confusion_matrix(model, X_test_tfidf, y_test, display_labels=class_names,cmap=plt.cm.Blues,normalize='true')
-			st.grid('off')
 			st.pyplot()
 	
 
