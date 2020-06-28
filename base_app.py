@@ -106,7 +106,7 @@ def main():
 	X_test_tfidf = tfidf_transformer.transform(X_test_counts)
 	#X_test_tfidf = vectorizer.fit_transform(X_test)
 	STOP_WORDS = nltk.corpus.stopwords.words()
-	#@st.cache(persist=True)
+
 	def clean_sentence(val):
     	#"remove chars that are not letters or numbers, downcase, then remove stop words"
 		regex = re.compile('([^\s\w]|_)+')
@@ -119,7 +119,7 @@ def main():
             
 		sentence = " ".join(sentence)
 		return sentence
-	#@st.cache(persist=True)
+
 	def clean_dataframe(data):
     	#"drop nans, then apply 'clean_sentence' function "
 		data = data.dropna(how="any")
@@ -129,7 +129,7 @@ def main():
     
 		return data
 	data_v1 = clean_dataframe(data_v)	
-	#@st.cache(persist=True)
+
 	def build_corpus(data):
     	#"Creates a list of lists containing words from each sentence"
 		corpus = []
@@ -143,7 +143,7 @@ def main():
 	corpus = build_corpus(data_v1)  
 	modell = word2vec.Word2Vec(corpus, size=100, window=20, min_count=200, workers=4)
 	model11 = word2vec.Word2Vec(corpus, size=100, window=20, min_count=500, workers=4)
-	#@st.cache(persist=True)
+
 	def tsne_plot(model):
 		#Creates and TSNE model and plots it
 		labels = []
@@ -171,59 +171,15 @@ def main():
                      ha='right',
                      va='bottom')
 		st.pyplot()	
-	#@st.cache(persist=True)
+
 	def plot_metrics(metrics_list):
 		if 'Confusion Matrix' in metrics_list:
 			st.subheader("Confusion Matrix")
-			#X_test1 = model.transform(X_test)
-			#cnf_matrix = metrics.confusion_matrix(y_test, y_pred)
-			#cnf_matrix
 			class_names = [-1, 0, 1, 2]# name  of classes
-			#fig, ax = plt.subplots()
-			#tick_marks = np.arange(len(class_names))
-			#plt.xticks(tick_marks, class_names)
-			#plt.yticks(tick_marks, class_names)
-			# create heatmap
-			#sns.heatmap(pd.DataFrame(metrics.confusion_matrix(np.array(y_test),np.array(y_pred))), annot=True, cmap="YlGnBu" ,fmt='g')
-			#ax.xaxis.set_label_position("top")
-			#plt.tight_layout()
-			#plt.title('Confusion matrix', y=1.1)
-			#plt.ylabel('Actual label')
-			#plt.xlabel('Predicted label')
 			plot_confusion_matrix(model, X_test_tfidf, y_test, display_labels=class_names,cmap=plt.cm.Blues,normalize='true')
-			#plot_confusion_matrix(classifier, X_test, y_test,
+
 			st.pyplot()
-
-		if 'ROC Curve' in metrics_list:
-			st.subheader("ROC Curve")
-			y_score = model.fit(X_train_tfidf, y_train).decision_function(X_test_tfidf)
-			class_names = [-1, 0, 1, 2]# name  of classes
-			# roc curve
-			fpr = dict()
-			tpr = dict()
-
-			for i in range(len(class_names)):
-				fpr[i], tpr[i], _ = roc_curve(y_test[i], y_score[i])
-				plt.plot(fpr[i], tpr[i], lw=2, label='class {}'.format(i))
-
-			plt.xlabel("false positive rate")
-			plt.ylabel("true positive rate")
-			plt.legend(loc="best")
-			plt.title("ROC curve")
-			#plt.show()
-			#plot_roc_curve(model, X_test_tfidf, y_test,cmap=plt.cm.Blues,normalize='true' )
-			st.pyplot() 
-
-		if 'Precision-Recall Curve' in metrics_list:
-			st.subheader("Precision-Recall Curve")
-			plot_precision_recall_curve(model, X_test_tfidf, y_test)
-			st.pyplot()
-
-		if 'Classification report' in metrics_list:
-			st.subheader("Classification report")
-			ClassificationReport(model, classes=[-1, 0, 1, 2], support=True)
-			st.pyplot() #classification_report(y_test, y_pred)	
-
+	
 
 	class_names = [-1, 0, 1, 2]
 	st.sidebar.subheader("Choose Classifier")
@@ -262,7 +218,7 @@ def main():
 		max_iter = st.sidebar.slider("Maximum number of iterations", 100, 500, key='max_iter')
 
         
-		metrics = st.sidebar.multiselect("What metrics to plot?",('Confusion Matrix','ROC Curve','Precision-Recall Curve','Classification report'))
+		metrics = st.sidebar.multiselect("Plot Confusion Matrix",('Confusion Matrix'))
 
 		if st.sidebar.button("Classify", key="classify"):
 			st.subheader("Logistic Regression Results")
@@ -301,7 +257,7 @@ def main():
 		max_depth = st.sidebar.number_input("The maximum depth of the tree",1,20,step=1,key="max_depth")
 		bootstrap = st.sidebar.radio("Bootstrap samples when building trees",("True","False"), key="bootstrap")
         
-		metrics = st.sidebar.multiselect("What metrics to plot?",('Confusion Matrix','ROC Curve','Precision-Recall Curve','Classification report'))
+		metrics = st.sidebar.multiselect("Plot confusion matrix",('Confusion Matrix'))
 
 		if st.sidebar.button("Classify", key="classify"):
 			st.subheader("LRandom Forest Results")
@@ -324,7 +280,7 @@ def main():
 		st.sidebar.subheader("Model Hyperparameters")
 		C = st.sidebar.number_input("C (Regularization parameter)",0.01,10.0, step=0.01, key='C')
         
-		metrics = st.sidebar.multiselect("What metrics to plot?",('Confusion Matrix','ROC Curve','Precision-Recall Curve','Classification report'))
+		metrics = st.sidebar.multiselect("Plot confusion matrix",('Confusion Matrix'))
 
 		if st.sidebar.button("Classify", key="classify"):
 			st.subheader("Linear Support Vector Classifier(LSVC) Results")
