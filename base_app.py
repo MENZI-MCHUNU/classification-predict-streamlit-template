@@ -177,7 +177,7 @@ def main():
 			st.subheader("Confusion Matrix")
 			class_names = [-1, 0, 1, 2]# name  of classes
 			plot_confusion_matrix(model, X_test_tfidf, y_test, display_labels=class_names,cmap=plt.cm.Blues,normalize='true')
-			plt.grid('off')
+			st.grid('off')
 			st.pyplot()
 	
 
