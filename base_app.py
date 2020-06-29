@@ -58,38 +58,34 @@ from sklearn.manifold import TSNE
 pd.options.mode.chained_assignment = None 
 from gensim import models
 from gensim.models import word2vec
-
+import emoji
 # Before you can run this script on your local computer please download the following 
 #pip install wordCloud
- #nltk.download('stopwords')
- #nltk.download('wordnet')
-
+#nltk.download('stopwords')
+#nltk.download('wordnet')
+#pip install emoji --upgrade
+# pip install gensim
+# pip install nltk
 
 # Load your raw data
 raw = pd.read_csv("resources/train.csv")
 # copy raw data
 data_v = raw.copy()
-#m = pd.read_csv("model.csv")
 # Load clean dataset
 clean_data = pd.read_csv("clean_data.csv")
-
 # The main function where we will build the actual app
 def main():
 	"""Tweet Classifier App with Streamlit """
 	st.sidebar.title("Multiclass Classification Web App")
-	options = ["Prediction", "Information","EDA","TSNE plot","About Machine Learning App","Instruction of use"]
+	options = ["Prediction", "Information","EDA","TSNE plot","About Machine Learning App","Instruction of use","Emojis"]
 	selection = st.sidebar.selectbox("Choose Option", options)
     # Split the data
 	X = clean_data['lemmatized_tweet']
 	y =clean_data['sentiment']
 	X_train, X_test, y_train, y_test = train_test_split(X,y,test_size=0.2, random_state=42)
 
-	#X_train = X_train.str.join(', ')
-	#X_test = X_test.str.join(', ')
+	# vectorize the data
 	vectorizer = TfidfVectorizer()
-	#X_train1 = X_train.tolist()
-	#X_train1 = ", ".join(X_train1)
-	#X_train_tfidf = vectorizer.fit_transform(X_train)
 
 	count_vect = CountVectorizer()
 	X_train_counts = count_vect.fit_transform(X_train)
@@ -98,7 +94,6 @@ def main():
 
 	X_test_counts = count_vect.transform(X_test)
 	X_test_tfidf = tfidf_transformer.transform(X_test_counts)
-	#X_test_tfidf = vectorizer.fit_transform(X_test)
 	STOP_WORDS = nltk.corpus.stopwords.words()
 
 	def clean_sentence(val):
@@ -178,32 +173,7 @@ def main():
 	st.sidebar.subheader("Choose Classifier")
 	Classifier = st.sidebar.selectbox("Classifier", ("Logistic Regression","Linear Support Vector","Random Forest"))
     
-	# if Classifier == 'Support Vector Machine (SVM)':
-	# 	st.sidebar.subheader("Model Hyperparameters")
-	# 	C = st.sidebar.number_input("C (Regularization parameter)",0.01,10.0, step=0.01, key='C')
-	# 	kernel = st.sidebar.radio("Kernel",("rbf","linear"),key='kernel')
-	# 	gamma = st.sidebar.radio("Gamma (Kernel Coefficient)", ("scale","auto"),key ='gamma')
-        
-	# 	metrics = st.sidebar.multiselect("What metrics to plot?",('Confusion Matrix','ROC Curve','Precision-Recall Curve'))
-
-	# 	if st.sidebar.button("Classify", key="classify"):
-	# 		st.subheader("Support Vector Machine (SVM) Results")
-	# 		model = SVC(C=C, kernel=kernel, gamma=gamma)
-	# 		#model.fit(x_train, y_train)
-	# 		model.fit(X_train_tfidf,y_train)
-
-	# 		text_classifier = Pipeline([
-    # 			('bow',CountVectorizer()),  # strings to token integer counts
-    # 			('tfidf', TfidfTransformer()),  # integer counts to weighted TF-IDF scores
-    # 			('classifier',SVC(C=C, kernel=kernel, gamma=gamma)),  # train on TF-IDF vectors w/ Linear Support Vector Classifier
-	# 		])
-	# 		text_classifier.fit(X_train, y_train)
-	# 		accuracy = text_classifier.score(X_test, y_test)
-	# 		y_pred  = text_classifier.predict(X_test)
-	# 		st.write("Accuracy: ", accuracy.round(2))
-	# 		st.write("Precision: ", precision_score(y_test, y_pred, labels=class_names).round(2))
-	# 		st.write("Recall: ", recall_score(y_test, y_pred, labels=class_names).round(2))
-	# 		plot_metrics(metrics)	
+	
 
 	if Classifier == 'Logistic Regression':
 		st.sidebar.subheader("Model Hyperparameters")
@@ -221,7 +191,7 @@ def main():
 			text_classifier = Pipeline([
     			('bow',CountVectorizer()),  # strings to token integer counts
     			('tfidf', TfidfTransformer()),  # integer counts to weighted TF-IDF scores
-    			('classifier',LogisticRegression(C=C, max_iter=max_iter)),  # train on TF-IDF vectors w/ Linear Support Vector Classifier
+    			('classifier',LogisticRegression(C=C, max_iter=max_iter)),  # train on TF-IDF vectors w/ LogisticRegression
 				])
 			text_classifier.fit(X_train, y_train)
 			accuracy = text_classifier.score(X_test, y_test)
@@ -230,20 +200,7 @@ def main():
 			st.write("Precision: ", precision_score(y_test, y_pred, labels=class_names,average='micro').round(2))	
 			st.write("Recall: ", recall_score(y_test, y_pred, labels=class_names,average='micro').round(2))
 			plot_metrics(metrics)
-			# #if st.checkbox('Let\'s  play:'):
-			# 	# try different Values of C and record testing accuracy
-			# C_range = list(range(1,50))
-			# scores = []
-			# for c in C_range:
-			# 	model = LogisticRegression(C=c)
-			# 	model.fit(X_train_tfidf, y_train)
-			# 	y_pred  = text_classifier.predict(X_test)
-			# 	class_names = [-1,0,1,2]
-			# 	scores.append(precision_score(y_test, y_pred, labels=class_names,average='micro').round(2))
-			# plt.plot(C_range, scores)
-			# plt.xlabel("Value of C for LogisticRegression")
-			# plt.ylabel("Testing Accuracy")
-			# st.pyplot()
+
 	if Classifier == 'Random Forest':
 		st.sidebar.subheader("Model Hyperparameters")
 		n_estimators =  st.sidebar.number_input("The number of trees in the forest",100,5000,step =10, key="n_estimators")
@@ -259,7 +216,7 @@ def main():
 			text_classifier = Pipeline([
 				('bow',CountVectorizer()),  # strings to token integer counts
 				('tfidf', TfidfTransformer()),  # integer counts to weighted TF-IDF scores
-				('classifier',RandomForestClassifier(n_estimators=n_estimators,max_depth=max_depth,bootstrap=bootstrap,n_jobs=-1)),  # train on TF-IDF vectors w/ Linear Support Vector Classifier
+				('classifier',RandomForestClassifier(n_estimators=n_estimators,max_depth=max_depth,bootstrap=bootstrap,n_jobs=-1)),  # train on TF-IDF vectors w/ Random Forest
 				])
 			text_classifier.fit(X_train, y_train)
 			accuracy = text_classifier.score(X_test, y_test)
@@ -278,7 +235,6 @@ def main():
 		if st.sidebar.button("Classify", key="classify"):
 			st.subheader("Linear Support Vector Classifier(LSVC) Results")
 			model = LinearSVC(C=C, multi_class='ovr')
-			#model.fit(x_train, y_train)
 			model.fit(X_train_tfidf,y_train)
 
 			text_classifier = Pipeline([
@@ -294,45 +250,65 @@ def main():
 			st.write("Recall: ", recall_score(y_test, y_pred, labels=class_names,average='micro').round(2))
 			plot_metrics(metrics)
 
-
-	# if Classifier == 'K-nearest neighbours':
-	# 	st.sidebar.subheader("Model Hyperparameters")
-	# 	n_neighbors = st.sidebar.slider("Number of nearest neighbours", 1, 50, key='n_neighbors')
-        
-	# 	metrics = st.sidebar.multiselect("What metrics to plot?",('Confusion Matrix','ROC Curve','Precision-Recall Curve'))
-
-	# 	if st.sidebar.button("Classify", key="classify"):
-	# 		st.subheader("K-nearest neighbours(KNN) Results")
-	# 		model = KNeighborsClassifier(n_neighbors =n_neighbors)
-	# 		model.fit(X_train_tfidf,y_train)
-
-	# 		text_classifier = Pipeline([
-	# 			('bow',CountVectorizer()),  # strings to token integer counts
-	# 			('tfidf', TfidfTransformer()),  # integer counts to weighted TF-IDF scores
-	# 			('classifier',KNeighborsClassifier(n_neighbors =n_neighbors)),  # train on TF-IDF vectors w/ K-nearest neighbours
-	# 		])
-	# 		text_classifier.fit(X_train, y_train)
-	# 		accuracy = text_classifier.score(X_test, y_test)
-	# 		y_pred  = text_classifier.predict(X_test)
-	# 		st.write("Accuracy: ", accuracy.round(2))
-	# 		st.write("Precision: ", precision_score(y_test, y_pred, labels=class_names,average='micro').round(2))
-	# 		st.write("Recall: ", recall_score(y_test, y_pred, labels=class_names,average='micro').round(2))
-	# 		plot_metrics(metrics)
-	# Creates a main title and subheader on your page -
-	# these are static across all pages
-	#st.title("Tweet Classifer")
-	st.subheader("Climate change tweet classification")
+	
 
 	# Creating sidebar with selection box -
-	# you can create multiple pages this way
+	if selection == "Emojis":
+		if st.checkbox('Show some emojis in the data'):
+			emojis_list = [':sun::trade_mark::trade_mark::trade_mark::trade_mark::trade_mark::United_States::trade_mark::face_with_tears_of_joy::face_with_tears_of_joy::United_States::United_States:\
+ 						  :zipper-mouth_face::zipper-mouth_face::party_popper::thinking_face::face_with_tears_of_joy::face_with_tears_of_joy::trade_mark::trade_mark::copyright::fire::trade_mark:\
+						  :squinting_face_with_tongue::face_with_tongue::face_with_tongue::trade_mark::trade_mark::trade_mark::oncoming_fist_light_skin_tone::middle_finger_light_skin_tone:\
+ 						  :trade_mark::trade_mark::trade_mark::trade_mark::trade_mark::sparkler::sparkler::trade_mark::trade_mark::trade_mark::trade_mark::trade_mark::trade_mark::trade_mark:',':trade_mark:\
+ 						  :trade_mark::trade_mark::trade_mark::trade_mark::trade_mark::trade_mark::trade_mark::trade_mark::snowflake::trade_mark::nail_polish_medium_skin_tone:\
+ 						  :left_arrow::trade_mark::trade_mark::grinning_face::grinning_face_with_sweat::police_car_light::trade_mark::trade_mark::trade_mark::trade_mark::trade_mark::trade_mark:\
+ 						  :rolling_on_the_floor_laughing::rolling_on_the_floor_laughing::rolling_on_the_floor_laughing::trade_mark::trade_mark::trade_mark::trade_mark::thinking_face::smiling_face_with_sunglasses::trade_mark:\
+						  :face_with_tears_of_joy::face_with_tears_of_joy::face_with_tears_of_joy::face_with_tears_of_joy:\
+ 						  :trade_mark::trade_mark::trade_mark::trade_mark::trade_mark::trade_mark::trade_mark::trade_mark::trade_mark::trade_mark:\
+ 						  :ear_light_skin_tone::pile_of_poo::ear_light_skin_tone::part_alternation_mark::exclamation_mark::trade_mark::trade_mark::trade_mark::trade_mark::hugging_face::trade_mark::clown_face::shuffle_tracks_button:\
+						  :trade_mark::trade_mark::trade_mark::anxious_face_with_sweat::astonished_face::confused_face:\
+ 						  :angry_face::angry_face::angry_face::angry_face::angry_face::angry_face::person_wearing_turban::thumbs_down::trade_mark::trade_mark::trade_mark::trade_mark::trade_mark:\
+						  :trade_mark::face_with_rolling_eyes::female_sign::winking_face_with_tongue::trade_mark::snowflake::snowflake::snowflake::trade_mark::trade_mark::thinking_face::face_with_tears_of_joy::trade_mark:\
+ 						  :trade_mark::movie_camera::backhand_index_pointing_right_light_skin_tone::face_with_tears_of_joy::double_exclamation_mark::sparkler::trade_mark:\
+ 						  :beaming_face_with_smiling_eyes::beaming_face_with_smiling_eyes::face_with_tears_of_joy::face_with_tears_of_joy::trade_mark::trade_mark::trade_mark::flushed_face::flushed_face::flushed_face::face_with_rolling_eyes::face_with_rolling_eyes:\
+						  :trade_mark::trade_mark::trade_mark::trade_mark::face_with_tears_of_joy::snowflake::snowflake::male_sign::backhand_index_pointing_right::trade_mark::face_with_tears_of_joy::trade_mark::hugging_face::registered:\
+ 						  :face_with_tears_of_joy::trade_mark::trade_mark::face_with_tears_of_joy::face_with_rolling_eyes::trade_mark::trade_mark::double_exclamation_mark::trade_mark::trade_mark::trade_mark::trade_mark::trade_mark:\
+ 						  :trade_mark::trade_mark::trade_mark::trade_mark::sleeping_face::trade_mark::grinning_face_with_sweat::trade_mark::trade_mark::trade_mark::thinking_face::see-no-evil_monkey::victory_hand::trade_mark::copyright::trade_mark::trade_mark:\
+ 						  :smiling_face_with_smiling_eyes::grinning_face::face_with_tears_of_joy::grinning_face_with_big_eyes::face_with_tears_of_joy::smiling_face_with_smiling_eyes:\
+						  :face_with_tears_of_joy::grinning_face_with_big_eyes::grinning_face_with_big_eyes::grinning_face_with_big_eyes::face_with_tears_of_joy::grinning_face::grinning_face::grinning_face_with_big_eyes::grinning_face_with_big_eyes::face_with_tears_of_joy:\
+						  :beaming_face_with_smiling_eyes::beaming_face_with_smiling_eyes::face_with_tears_of_joy::grinning_face_with_big_eyes::grinning_face_with_big_eyes::grinning_face_with_big_eyes::beaming_face_with_smiling_eyes::beaming_face_with_smiling_eyes::face_with_tears_of_joy:\
+						  :grinning_face_with_big_eyes::grinning_face_with_big_eyes::face_with_tears_of_joy::grinning_face_with_big_eyes::grinning_face_with_big_eyes::honeybee::skull::United_States::trade_mark::trade_mark::trade_mark::grinning_face_with_smiling_eyes::trade_mark:',':trade_mark:\
+ 						  :trade_mark::trade_mark::trade_mark::trade_mark::female_sign::copyright::fire::fire::fire::trade_mark::flushed_face::trade_mark::film_frames::blossom::trade_mark::trade_mark::trade_mark::trade_mark::copyright::play_button:\
+ 						  :trade_mark::trade_mark::play_button::face_with_steam_from_nose::pile_of_poo::trade_mark::trade_mark::trade_mark::trade_mark::trade_mark::skier::thinking_face::face_with_tears_of_joy::sun::trade_mark::expressionless_face::sparkles::smiling_face:\
+ 						  :neutral_face::face_with_tears_of_joy::face_with_tears_of_joy::snowflake::snowflake::snowflake::trade_mark::weary_face::confused_face::loudly_crying_face::trade_mark::trade_mark::trade_mark::trade_mark::trade_mark::trade_mark::trade_mark::sun:\
+ 						  :trade_mark::trade_mark::trade_mark::trade_mark::trade_mark::smiling_face_with_smiling_eyes::sun::smiling_face_with_heart-eyes::smiling_face_with_heart-eyes::tired_face::tired_face::tired_face::hundred_points::hundred_points::OK_hand_medium_skin_tone::fire::fire::weary_face::trade_mark::trade_mark:\
+ 						  :trade_mark::hand_with_fingers_splayed::mountain::trade_mark::trade_mark::snowflake::fire::fire::smirking_face::face_with_tears_of_joy::face_with_tears_of_joy::face_with_tears_of_joy::face_with_tears_of_joy::smiling_face_with_heart-eyes::face_with_tears_of_joy::face_with_tears_of_joy:\
+ 						  :rolling_on_the_floor_laughing::face_with_tears_of_joy::rolling_on_the_floor_laughing::face_with_tears_of_joy::rolling_on_the_floor_laughing::face_with_tears_of_joy::trade_mark::face_with_tears_of_joy::face_with_tears_of_joy::face_with_tears_of_joy:\
+ 						  :grinning_face_with_smiling_eyes::thinking_face::trade_mark::trade_mark::trade_mark::beaming_face_with_smiling_eyes::beaming_face_with_smiling_eyes::trade_mark::trade_mark::face_with_tears_of_joy::face_with_tears_of_joy::trade_mark::index_pointing_up::cyclone::face_with_tears_of_joy:\
+ 						  :trade_mark::trade_mark::red_heart:',':trade_mark::face_with_tears_of_joy::play_button::trade_mark::copyright::copyright::copyright::copyright:::trade_mark::trade_mark::globe_showing_Americas::collision::face_with_rolling_eyes::trade_mark::frog_face::hot_beverage:\
+ 						  :loudly_crying_face::loudly_crying_face::loudly_crying_face::loudly_crying_face::loudly_crying_face::hundred_points::raising_hands_light_skin_tone::trade_mark::trade_mark::trade_mark::slightly_frowning_face::trade_mark::trade_mark::trade_mark::trade_mark::trade_mark::trade_mark::person_shrugging_light_skin_tone::female_sign::trade_mark:\
+ 						  :trade_mark::trade_mark::ghost::face_with_tears_of_joy::umbrella_with_rain_drops::trade_mark::play_button::trade_mark::trade_mark::trade_mark::trade_mark::trade_mark::trade_mark::trade_mark::trade_mark::trade_mark::airplane::trade_mark::trade_mark::thinking_face::grinning_face::skull::face_with_tears_of_joy::eyes:\
+ 						  :tired_face::trade_mark::trade_mark::trade_mark::trade_mark::trade_mark::trade_mark::face_with_tears_of_joy::trade_mark::fire::trade_mark::victory_hand::face_with_tears_of_joy::fire::globe_showing_Americas::snowflake::sun::folded_hands_light_skin_tone::face_with_tears_of_joy::baby_angel::ring:\
+ 						  :red_heart::face_with_tears_of_joy::face_with_tears_of_joy::face_with_tears_of_joy::grinning_squinting_face::grinning_squinting_face::grinning_squinting_face::trade_mark::trade_mark::trade_mark::trade_mark::trade_mark::grinning_cat_face::sweat_droplets::face_with_tears_of_joy::trade_mark::trade_mark:\
+						  :play_button::trade_mark::trade_mark::fire::trade_mark::trade_mark::trade_mark::trade_mark::trade_mark::face_with_rolling_eyes::peace_symbol::trade_mark::trade_mark::grinning_face_with_sweat::globe_showing_Asia-Australia::trade_mark::trade_mark:\
+ 						  :trade_mark::trade_mark::trade_mark::trade_mark::trade_mark::angry_face::trade_mark::trade_mark::squinting_face_with_tongue::face_with_tears_of_joy::face_with_tears_of_joy::winking_face_with_tongue::trade_mark::trade_mark::trade_mark::red_heart::trade_mark::trade_mark:\
+ 						  :grinning_face_with_sweat::grinning_face_with_sweat::grinning_face_with_sweat::trade_mark::trade_mark::trade_mark::Cancer::trade_mark::face_with_tears_of_joy::trade_mark::trade_mark::trade_mark::copyright::copyright::trade_mark::trade_mark::trade_mark::trade_mark::trade_mark::trade_mark::trade_mark::trade_mark::telescope::microscope::magnifying_glass_tilted_left::flashlight:\
+ 						  :trade_mark::trade_mark::trade_mark::trade_mark::trade_mark::trade_mark::trade_mark::trade_mark::face_with_tears_of_joy::face_with_tears_of_joy::loudly_crying_face::face_with_thermometer::face_with_tears_of_joy::trade_mark::sad_but_relieved_face::zipper-mouth_face::trade_mark::trade_mark::trade_mark::red_heart::trade_mark::trade_mark::trade_mark::trade_mark::female_sign:\
+ 						  :trade_mark::sun_with_face::sun_with_face::sun_with_face::sun_with_face::thinking_face::face_with_tears_of_joy::copyright::trade_mark::trade_mark::trade_mark::eyes::trade_mark::trade_mark::trade_mark::trade_mark::squinting_face_with_tongue::green_heart::trade_mark::trade_mark::trade_mark::tired_face::trade_mark::trade_mark:\
+ 						  :trade_mark::hot_beverage::face_without_mouth::face_without_mouth::face_with_tears_of_joy::trade_mark::trade_mark::trade_mark::trade_mark::trade_mark::face_with_tears_of_joy::registered::trade_mark::trade_mark::trade_mark::smirking_face::trade_mark::fast-forward_button::exclamation_question_mark::exclamation_question_mark:\
+ 						  :trade_mark::trade_mark::red_heart::trade_mark::face_with_medical_mask::snowflake::cloud_with_snow::face_with_tears_of_joy::winking_face_with_tongue::trade_mark::trade_mark::pensive_face::unamused_face::trade_mark::trade_mark::snowflake::trade_mark::trade_mark::trade_mark:']
+			for i in emojis_list:
+				list_emojis = emoji.emojize(i)	
+				st.markdown(list_emojis)
+	# Building out the TSNE plot page
 	if selection == "TSNE plot":
+		st.subheader("Climate change tweet classification")
 		if st.checkbox('Show TSNE plot'):
-			#md = np.array(m)
 			tsne_plot(modell)
 			tsne_plot(model11)
 
 	# Building out the "Information" page
 	if selection == "Information":
+		st.subheader("Climate change tweet classification")
 		st.info("General Information")
 		# You can read a markdown file from supporting resources folder
 		st.markdown("Some information here")
@@ -343,6 +319,7 @@ def main():
 
 	# Building out the predication page
 	if selection == "Prediction":
+		st.subheader("Climate change tweet classification")
 		st.info("Prediction with ML Models")
 		# Creating a text box for user input
 		tweet_text = st.text_area("Enter Text","Type Here")
@@ -350,15 +327,9 @@ def main():
 		model_choice = st.selectbox("Choose ML Model",all_ml_models)
 
 		if st.button("Classify"):
-			# Transforming user input with vectorizer
-			#X_train = tweet_text.join(', ')
-			#vectorizer = TfidfVectorizer()
-			#count_vect = CountVectorizer(lowercase=False)
-			#user_text = count_vect.transform(tweet_text)
-			#tfidf_user_text = vectorizer.transform(tweet_text)
+			# We loading in multiple models to give the user a choice
 			if model_choice == 'Linear Support Vector':
 				model = LinearSVC(C=1, multi_class='ovr')
-				#model.fit(x_train, y_train)
 				model.fit(X_train_tfidf,y_train)
 				text_classifier = Pipeline([
 					('bow',CountVectorizer(lowercase=False)),  # strings to token integer counts
@@ -366,28 +337,17 @@ def main():
 					('classifier',LinearSVC()),  # train on TF-IDF vectors w/ Linear Support Vector Classifier
 				])
 				text_classifier.fit(X_train, y_train)
-				vect_text = tweet_text
-				# Load your .pkl file with the model of your choice + make predictions
-				# Try loading in multiple models to give the user a choice
-				#predictor = joblib.load(open(os.path.join("resources/Logistic_regression.pkl"),"rb"))
-				#prediction = predictor.predict(vect_text)
-				#predictor = joblib.load(open(os.path.join("resources/Linear_Support_Vector_Classifier_model.pkl"),"rb"))
-				#predictor = joblib.load(open(os.path.join("resources/Linear_Support1.pkl"),"rb"))
-				#model = joblib.load('model_question_topic.pkl')
 				prediction = text_classifier.predict(pd.Series(tweet_text.split(",")))
-				# When model has successfully run, will print prediction
-				# You can use a dictionary or similar structure to make this output
-				# more human interpretable.
+				
 			elif  model_choice == 'K-nearest neighbour':
 				model = KNeighborsClassifier(n_neighbors = 3)
 				model.fit(X_train_tfidf, y_train)
 				text_classifier = Pipeline([
 						('bow',CountVectorizer(lowercase=False)),  # strings to token integer counts
 						('tfidf', TfidfTransformer()),  # integer counts to weighted TF-IDF scores
-						('classifier',KNeighborsClassifier(n_neighbors = 3)),  # train on TF-IDF vectors w/ Linear Support Vector Classifier
+						('classifier',KNeighborsClassifier(n_neighbors = 3)),  # train on TF-IDF vectors w/ K-neighbors Classifier
 				])
 				text_classifier.fit(X_train, y_train)			
-				
 				prediction = text_classifier.predict(pd.Series(tweet_text.split(",")))
 
 			elif model_choice == 'LogisticRegression':
@@ -396,16 +356,16 @@ def main():
 				text_classifier = Pipeline([
 						('bow',CountVectorizer(lowercase=False)),  # strings to token integer counts
 						('tfidf', TfidfTransformer()),  # integer counts to weighted TF-IDF scores
-						('classifier',LogisticRegression(C=1, max_iter=10)),  # train on TF-IDF vectors w/ Linear Support Vector Classifier
+						('classifier',LogisticRegression(C=1, max_iter=10)),  # train on TF-IDF vectors w/ LogisticRegression
 				])
 				text_classifier.fit(X_train, y_train)
 				prediction = text_classifier.predict(pd.Series(tweet_text.split(",")))
-				
+			# When model has successfully run, will print prediction	
 			st.success("Text Categorized as: {}".format(prediction))
 
 	# Building out the EDA page	
 	if selection == "EDA":
-		#st.title("Insights on people's peception on Climate Change ")
+		st.title("Insights on people's peception on climate change ")
 
 		st.subheader("Sentiment Data")
 		if st.checkbox('Show sentiment data'):
@@ -458,7 +418,7 @@ def main():
 			st.pyplot()
 
 
-		st.subheader("Understanding Relationship of Hashtags and Sentiment of Tweet")
+		st.subheader("Understanding Relationship of Hashtags and Sentiment of Tweets")
 		if st.checkbox('Show Pro hashtags Tweets'):
 			df_pro = clean_data[clean_data.sentiment==1]
 			pro_hashtags = []
@@ -479,7 +439,6 @@ def main():
 			plt.title('Top 10 Hashtags in "Pro" Tweets', fontsize=14)
 			st.pyplot()
 
-		#st.subheader("Understanding Relationship of Hashtags and Sentiment of Tweet")
 		if st.checkbox('Show Anti hashtags Tweets'):
 			df_anti = clean_data[clean_data.sentiment==-1]
 			anti_hashtags = []
@@ -494,7 +453,7 @@ def main():
 			d = pd.DataFrame({'Hashtag': list(a.keys()),
                   'Count': list(a.values())})
 
-		# selecting top 20 most frequent hashtags     
+		# selecting top 10 most frequent hashtags     
 			d = d.nlargest(columns="Count", n = 10) 
 			plt.figure(figsize=(10,5))
 			ax = sns.barplot(data=d, x= "Hashtag", y = "Count")
@@ -516,7 +475,7 @@ def main():
 			d = pd.DataFrame({'Hashtag': list(a.keys()),
                   'Count': list(a.values())})
 
-			# selecting top 20 most frequent hashtags     
+			# selecting top 10 most frequent hashtags     
 			d = d.nlargest(columns="Count", n = 10) 
 			plt.figure(figsize=(10,5))
 			ax = sns.barplot(data=d, x= "Hashtag", y = "Count")
@@ -538,13 +497,15 @@ def main():
 			d = pd.DataFrame({'Hashtag': list(a.keys()),
                   'Count': list(a.values())})
 
-			# selecting top 20 most frequent hashtags     
+			# selecting top 10 most frequent hashtags     
 			d = d.nlargest(columns="Count", n = 10) 
 			plt.figure(figsize=(10,5))
 			ax = sns.barplot(data=d, x= "Hashtag", y = "Count")
 			plt.setp(ax.get_xticklabels(),rotation=17, fontsize=10)
 			plt.title('Top 10 Hashtags in Factual Tweets', fontsize=14)
 			st.pyplot()	
+
+	# Building out the About Machine Learning App page		
 	if selection == "About Machine Learning App":
 		st.title("Welcome to the climate change Classification Machine Learning App")
 		st.subheader('Machine Learning')
@@ -566,9 +527,9 @@ def main():
 		st.markdown('<p>Random forest is a supervised learning algorithm which is used for both classification as well as regression. But however, it is mainly used for classification problems. As we know that a forest is made up of trees and more trees means more robust forest. Similarly, random forest algorithm creates decision trees on data samples and then gets the prediction from each of them and finally selects the best solution by means of voting. It is an ensemble method which is better than a single decision tree because it reduces the over-fitting by averaging the result. </p>', unsafe_allow_html=True)	
 		st.markdown('<p><strong>Linear support vector classifier</strong></p>', unsafe_allow_html=True)	
 		st.markdown('<p>Support vector machines (SVMs) are powerful yet flexible supervised machine learning algorithms which are used both for classification and regression. But generally, they are used in classification problems. Lately, they are extremely popular because of their ability to handle multiple continuous and categorical variables. </p>', unsafe_allow_html=True)	
-		st.markdown('<p>For more information about building data Apps Please go to :<a href="https://www.streamlit.io/">Here</a></p>', unsafe_allow_html=True)	
+		st.markdown('<p>For more information about building data Apps Please go to :<a href="https://www.streamlit.io/">streamlit site</a></p>', unsafe_allow_html=True)	
 		st.markdown('<p> </p>', unsafe_allow_html=True)	
-
+	# Building out the Instruction of use page
 	if selection == "Instruction of use":
 		st.title("Instructions")
 		st.markdown('When the application opens the first page you will see is the prediction page.')
