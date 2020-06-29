@@ -77,7 +77,7 @@ clean_data = pd.read_csv("clean_data.csv")
 def main():
 	"""Tweet Classifier App with Streamlit """
 	st.sidebar.title("Multiclass Classification Web App")
-	options = ["Prediction", "Information","EDA","TSNE plot","About Machine Learning App","Instruction of use","Emojis"]
+	options = ["Prediction", "Information","EDA","About Machine Learning App","Instruction of use","Emojis"]
 	selection = st.sidebar.selectbox("Choose Option", options)
     # Split the data
 	X = clean_data['lemmatized_tweet']
@@ -94,72 +94,6 @@ def main():
 
 	X_test_counts = count_vect.transform(X_test)
 	X_test_tfidf = tfidf_transformer.transform(X_test_counts)
-	STOP_WORDS = nltk.corpus.stopwords.words()
-
-	def clean_sentence(val):
-    	#"remove chars that are not letters or numbers, downcase, then remove stop words"
-		regex = re.compile('([^\s\w]|_)+')
-		sentence = regex.sub('', val).lower()
-		sentence = sentence.split(" ")
-    
-		for word in list(sentence):
-			if word in STOP_WORDS:
-				sentence.remove(word)  
-            
-		sentence = " ".join(sentence)
-		return sentence
-
-	def clean_dataframe(data):
-    	#"drop nans, then apply 'clean_sentence' function "
-		data = data.dropna(how="any")
-    
-		for col in ['message']:
-			data[col] = data[col].apply(clean_sentence)
-    
-		return data
-	data_v1 = clean_dataframe(data_v)	
-
-	def build_corpus(data):
-    	#"Creates a list of lists containing words from each sentence"
-		corpus = []
-		for col in ['message']:
-			for sentence in data[col].iteritems():
-				word_list = sentence[1].split(" ")
-				corpus.append(word_list)
-            
-		return corpus
-
-	corpus = build_corpus(data_v1)  
-	modell = word2vec.Word2Vec(corpus, size=100, window=20, min_count=200, workers=4)
-	model11 = word2vec.Word2Vec(corpus, size=100, window=20, min_count=500, workers=4)
-
-	def tsne_plot(model):
-		#Creates and TSNE model and plots it
-		labels = []
-		tokens = []
-
-		for word in model.wv.vocab:
-			tokens.append(model[word])
-			labels.append(word)
-    
-		tsne_model = TSNE(perplexity=40, n_components=2, init='pca', n_iter=2500, random_state=23)
-		new_values = tsne_model.fit_transform(tokens)
-
-		x = []
-		y = []
-		for value in new_values:
-			x.append(value[0])
-			y.append(value[1])
-        
-		plt.figure(figsize=(13, 7)) 
-		for i in range(len(x)):
-			plt.scatter(x[i],y[i])
-			plt.annotate(labels[i],
-                     xy=(x[i], y[i]),xytext=(5, 2),
-                     textcoords='offset points',
-                     ha='right',
-                     va='bottom')
-		st.pyplot()	
 
 	def plot_metrics(metrics_list):
 		if 'Confusion Matrix' in metrics_list:
@@ -299,12 +233,6 @@ def main():
 			for i in emojis_list:
 				list_emojis = emoji.emojize(i)	
 				st.markdown(list_emojis)
-	# Building out the TSNE plot page
-	if selection == "TSNE plot":
-		st.subheader("Climate change tweet classification")
-		if st.checkbox('Show TSNE plot'):
-			tsne_plot(modell)
-			tsne_plot(model11)
 
 	# Building out the "Information" page
 	if selection == "Information":
